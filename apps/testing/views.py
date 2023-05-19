@@ -11,32 +11,29 @@ def get_request(url):
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         get_error(response)
-        return
-    # print("Response : ", json.dumps(response.json(), indent=4))
+        return None
+    
     return response.json()
 
 
-def post_request(url, payload):
+def post_request(url, payload, exp_status):
     headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": env("BEARER")
     }
     response = requests.post(url, json=payload, headers=headers)
-    if response.status_code != 200:
-        error_code = get_error(response)
-        return error_code
-    # print("Response : ", json.dumps(response.json(), indent=4))
+    if response.status_code != exp_status:
+        get_error(response)
+        return None
+    
     return response.json()
 
 
 def get_error(response):
     formatted_error = json.loads(response.content.decode("utf-8"))
-    error_code = formatted_error["error"]["code"]
-
-    # print(response.reason, ":", response.status_code)
-    # print(formatted_error) 
-    # print('Error Code:', error_code)
-    return error_code
+    error_message = formatted_error["error"]["message"]
+    print("\n", error_message, sep="")
+    return
 
 
 def get_yes_no_input(prompt):
@@ -46,6 +43,8 @@ def get_yes_no_input(prompt):
             return True
         elif choice in ['no', 'n']:
             return False
+        elif choice == 'quit':
+            return None
         else:
             print("Please try again, enter 'yes' or 'no'.")
 
@@ -86,8 +85,7 @@ def headquarters():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{hq_location}"
     except Exception:
-        print("Error: Location details #1 not set, try agent info")
-        return
+        return None
     get_request(url)
 
 
@@ -104,8 +102,7 @@ def detail_contract():
     try:
         url = f"https://api.spacetraders.io/v2/my/contracts/{contractId}"
     except NameError:
-        print("Error: Contract details not set, try list contracts")
-        return 
+        return None
     get_request(url)
 
 
@@ -114,17 +111,15 @@ def list_waypoints():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
     except Exception:
-        print("Error: Location details #2 not set, try agent info")
-        return
+        return None
     get_request(url)
 
 
 def detail_waypoint():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-    except:
-        print("Error: Location details #3 not set, try agent info")
-        return
+    except Exception:
+        return None
     get_request(url)
 
 
@@ -134,7 +129,6 @@ def find_shipyard():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
     except Exception:
-        print("Error: Location details #4 not set, try agent info")
         return None
     
     info = get_request(url)
@@ -167,7 +161,6 @@ def list_ships():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{shipyard_system}/waypoints/{shipyard}/shipyard"
     except Exception:
-        print("Error: Shipyard details not set, try find_shipyard")
         return None
     
     info = get_request(url)
@@ -183,7 +176,6 @@ def find_asteroids():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
     except Exception:
-        print("Error: Location details #5 not set, try agent info")
         return None
     
     info = get_request(url)
@@ -197,6 +189,7 @@ def find_asteroids():
              
     print('No asteroids found')
     return None
+
 
 
 def find_destinations():
@@ -234,16 +227,14 @@ def detailed_navigate_info(navigate_info):
 
 
 
-def docking_destination(arrival_in, ship_symbol, payload):
-    time.sleep(arrival_in)
+def docking():
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/dock"
         post_request(url, payload)
         refuel_choice(ship_symbol)
 
     except Exception:
-        print("Error: Location details #6 not set, try agent info") 
-        traceback.print_exc()
+        return None
 
 
 def dock_choice(arrival_in, ship_symbol, payload):
@@ -253,26 +244,25 @@ def dock_choice(arrival_in, ship_symbol, payload):
     try:
         if proceed:
             print("\nDocking on arrival, in c.", arrival_in, "secs\n" )
-            docking_destination(arrival_in, ship_symbol, payload)
+            time.sleep(arrival_in)
+            docking(ship_symbol, payload)
         else:
-            print("\nYou can chooose on arrival, in c.",arrival_in,"secs\n")
+            print("\nYou can also chooose on arrival, in c.",arrival_in,"secs\n")
             return
         
     except Exception:
-        print ('HERE WE ARE #2')
-        return
+        return None
 
 
 
-def refueling(ship_symbol):
+def refuel():
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/refuel"
         payload = {}
         post_request(url, payload)
 
-    except Exception:
-        print("Error: Location details #7 not set, try agent info") 
-        traceback.print_exc()
+    except Exception: 
+        return None
 
 
 def refuel_choice(ship_symbol):
@@ -282,58 +272,89 @@ def refuel_choice(ship_symbol):
     try:
         if proceed:
             print("\nRefueling now\n" )
-            refueling(ship_symbol)
+            refuel(ship_symbol)
         else:
             print("\nSuit yourself\n")
             return 
         
     except Exception:
-        print ('HERE WE ARE #2')
-        traceback.print_exc()
-        return
+        return None
+    
 
+
+def orbit():
+    try:
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/orbit"
+        exp_status = 200
+        payload = {}
+        post_request(url, payload, exp_status)
+
+    except Exception: 
+        return None
+
+
+def extract():
+    try:
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
+        exp_status = 201
+        payload = {}
+        extract_info = post_request(url, payload, exp_status)
+        detailed_extraction_info(extract_info)
+        # traceback.print_exc()
+
+    except Exception:
+        # traceback.print_exc()   
+        return None
+
+
+##### Extract() is now failing silently, no bueno
+
+
+def detailed_extraction_info(extract_info):
+    extr_material = extract_info['data']['extraction']['yield']['symbol']
+    extr_amount = extract_info['data']['extraction']['yield']['units']
+    cooldown = extract_info['data']['cooldown']['remainingSeconds']
+    cargo_capacity = extract_info['data']['cargo']['capacity']
+    cargo_current = extract_info['data']['cargo']['units']
+    cargo_index = cargo_current/cargo_capacity
+    extr_index = extr_amount/cargo_capacity
+    print("\nCooldown:", cooldown, 'secs')
+    print("Material:", extr_material,'- Amount:', extr_amount)
+    print("Cargo:", cargo_index)
+    print("Last load:", extr_index)
+    return
 
 ## POST REQUESTS
 
 
 def navigate_ship():
+    global arrival_in, ship_symbol, payload
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/navigate"
     except Exception:
-        print("Error: Ship details not set, try list_ships")
-        return
+        return None
     
     if 'destinations' not in globals():
         find_destinations()
 
     try:
         waypoint = destination_choice()
+        exp_status = 200
         payload = {"waypointSymbol": destinations.get(waypoint)}
-        navigate_info = post_request(url, payload)
+        navigate_info = post_request(url, payload, exp_status)
         arrival_in = detailed_navigate_info(navigate_info) 
         dock_choice(arrival_in, ship_symbol, payload)
 
     except Exception:
-        # print('HERE WE ARE #1')
         # traceback.print_exc()
-        if navigate_info == 4214:
-            print("\nShip is currently in-transit to", waypoint )
-            return
-        
-        elif navigate_info == 4204:
-            print("\nShip is located at the selected destination")
-            return
-        
-        else: 
-            print('Still looking')
+        return None
 
 
 def purchase_ship():
     try:
         url = "https://api.spacetraders.io/v2/my/ships"
-    except Exception:
-        print("Error: Ship details not set, try list_ships")
-        return
+    except Exception:    
+        return None
     
     print('From these choices:')
     for number, ship in ships_dict.items():
@@ -341,16 +362,17 @@ def purchase_ship():
     
     num_choice = input("Which numbered ship would you want? ")
     payload = {"shipType": ships_dict.get(int(num_choice)), "waypointSymbol": shipyard}
+    exp_status = 201
     
-    post_request(url, payload)
+    post_request(url, payload, exp_status)
 
 
 def accept_contract():
     try:
         url = f"https://api.spacetraders.io/v2/my/contracts/{contractId}/accept"
-    except Exception:
-        print("Error: Contract details not set, try list contracts")
-        return 
+    except Exception:   
+        return None
     
     payload = {}
-    post_request(url, payload)
+    exp_status = 200
+    post_request(url, payload, exp_status)
