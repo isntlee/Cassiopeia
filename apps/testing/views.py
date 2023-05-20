@@ -2,7 +2,7 @@ from django.shortcuts import render
 from datetime import datetime
 from environ import Env; env = Env()
 import json, requests, time, traceback
-
+from sys import exit
 
 def start_up():
     agent_info()
@@ -57,13 +57,27 @@ def get_yes_no_input(prompt):
         elif choice in ['no', 'n']:
             return False
         elif choice == 'quit':
-            return None
+            exit()
         else:
             print("Please try again, enter 'yes' or 'no'.")
 
 
+def num_choice(question):
+    choice = None
+    while choice != "quit":
+        choice = input(question)
+        
+        if choice.isdigit():
+            choice = int(choice)
+            return choice  
+        elif choice.lower() == "quit":
+            exit()
+        else:
+            print("Invalid input")
 
-#########################              GET REQUESTS               ###############################
+
+
+#########################              Basic Status              ###############################
 
 
 def game_status():
@@ -73,6 +87,14 @@ def game_status():
 
 def systems():
     url = "https://api.spacetraders.io/v2/systems"
+    get_request(url)
+
+
+def headquarters():
+    try:
+        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{hq_location}"
+    except NameError:
+        return None
     get_request(url)
 
 
@@ -89,73 +111,6 @@ def agent_info():
     return hq_location, home_system,'HOME'
 
 
-def headquarters():
-    try:
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{hq_location}"
-    except NameError:
-        return None
-    get_request(url)
-
-
-
-def list_contracts():
-    ### No way to select different contracts 
-    global contractId
-    url = "https://api.spacetraders.io/v2/my/contracts"
-    info = get_request(url)
-    contractId = info["data"][0]["id"]
-
-
-def detail_contract():
-    try:
-        url = f"https://api.spacetraders.io/v2/my/contracts/{contractId}"
-    except NameError:
-        return None
-    get_request(url)
-
-
-
-def list_waypoints():
-    try:
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-    except NameError:
-        return None
-    get_request(url)
-
-
-def detail_waypoint():
-    try:
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-    except NameError:
-        return None
-    get_request(url)
-
-
-
-def find_shipyard():
-    global shipyard, shipyard_system
-    try:
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-    except NameError:
-        return None
-    
-    info = get_request(url)
-    data = info.get('data', [])
-
-    for item in data:
-        traits = item.get("traits", [])
-
-        for trait in traits:
-            if trait.get("symbol") == "SHIPYARD":
-                shipyard = item.get('symbol',[])
-                shipyard_system = shipyard[:7]
-                print('Shipyard: ', shipyard)
-                return shipyard, shipyard_system
-             
-    print('No shipyards found')
-    return None
-
-
 def list_own_ships():
     global ship_symbol
     url = "https://api.spacetraders.io/v2/my/ships"
@@ -165,7 +120,7 @@ def list_own_ships():
 
 
 def ship_status():
-    global ship_symbol
+    global ship_symbol, cargo_obj
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}"
     except NameError:
@@ -193,7 +148,7 @@ def ship_status():
     cargo_capacity = status_info['data']['cargo']['capacity']
     cargo_current = status_info['data']['cargo']['units']
     cargo_index = cargo_current/cargo_capacity
-    my_cargo = {}
+    cargo_obj = {}
     percentage_format("Cargo fill", cargo_index)
 
     print("\nCurrent cargo on", ship_name, ":\n")
@@ -201,13 +156,55 @@ def ship_status():
         goods_name = goods['symbol']
         amount = goods['units']
         print(goods_name,'-', amount)
-        my_cargo.update({goods_name:amount})
-    print('Cargo object =', my_cargo)
-    return    
+        cargo_obj.update({goods_name:amount})
+    return  
+
+
+def list_waypoints():
+    try:
+        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
+    except NameError:
+        return None
+    get_request(url)
+
+
+def detail_waypoint():
+    try:
+        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
+    except NameError:
+        return None
+    get_request(url)
+
+
+#########################              Purchasing ships              ###############################
+
+
+def find_shipyard():
+    global shipyard, shipyard_system
+    try:
+        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
+    except NameError:
+        return None
+    
+    info = get_request(url)
+    data = info.get('data', [])
+
+    for item in data:
+        traits = item.get("traits", [])
+
+        for trait in traits:
+            if trait.get("symbol") == "SHIPYARD":
+                shipyard = item.get('symbol',[])
+                shipyard_system = shipyard[:7]
+                print('Shipyard: ', shipyard)
+                return shipyard, shipyard_system
+             
+    print('No shipyards found')
+    return None
 
 
 def list_ships():
-    global ships_list, ships_dict
+    global ships_list, ships_obj
     try:
         url = f"https://api.spacetraders.io/v2/systems/{shipyard_system}/waypoints/{shipyard}/shipyard"
     except NameError:
@@ -215,10 +212,30 @@ def list_ships():
     
     info = get_request(url)
     ships_list  = info['data']['shipTypes']
-    ships_dict = {}
+    ships_obj = {}
     for num , item in enumerate(ships_list):
-        ships_dict[num + 1] = item['type']
+        ships_obj[num + 1] = item['type']
     return ships_list
+
+
+def purchase_ship():
+    try:
+        url = "https://api.spacetraders.io/v2/my/ships"
+    except Exception:    
+        return None
+    
+    print('From these choices:')
+    for number, ship in ships_obj.items():
+        print(f"{number}. {ship}")
+    
+    num_choice = input("Which numbered ship would you want? ")
+    payload = {"shipType": ships_obj.get(int(num_choice)), "waypointSymbol": shipyard}
+    exp_status = 201
+    
+    post_request(url, payload, exp_status)
+
+
+#########################              Extraction             ###############################
 
 
 def find_asteroids():
@@ -241,27 +258,87 @@ def find_asteroids():
     return None
 
 
+def extract():
+    try:
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
+        exp_status = 201
+        payload = {}
+        extract_info = post_request(url, payload, exp_status)
+        detailed_extraction_info(extract_info)
+
+    except NameError:
+        print("\nName 'ship_symbol' is not defined, run start_up()") 
+        return None
+
+
+def detailed_extraction_info(extract_info):
+    extr_material = extract_info['data']['extraction']['yield']['symbol']
+    extr_amount = extract_info['data']['extraction']['yield']['units']
+    cooldown = extract_info['data']['cooldown']['remainingSeconds']
+    cargo_capacity = extract_info['data']['cargo']['capacity']
+    cargo_current = extract_info['data']['cargo']['units']
+    cargo_index = cargo_current/cargo_capacity
+    extr_index = extr_amount/cargo_capacity
+    print("\nCooldown:", cooldown, 'secs')
+    print("Material:", extr_material,'- Amount:', extr_amount)
+    percentage_format("Cargo fill", cargo_index)
+    percentage_format("Last load", extr_index)
+    return
+
+
+#########################              Contracts             ###############################
+
+
+def list_contracts():
+    ### No way to select different contracts 
+    global contractId
+    url = "https://api.spacetraders.io/v2/my/contracts"
+    info = get_request(url)
+    contractId = info["data"][0]["id"]
+
+
+def detail_contract():
+    try:
+        url = f"https://api.spacetraders.io/v2/my/contracts/{contractId}"
+    except NameError:
+        return None
+    get_request(url)
+
+
+def accept_contract():
+    try:
+        url = f"https://api.spacetraders.io/v2/my/contracts/{contractId}/accept"
+    except NameError:   
+        return None
+    
+    payload = {}
+    exp_status = 200
+    post_request(url, payload, exp_status)
+
+
+#########################              Navigation             ###############################
+
 
 def find_destinations():
-    global destinations
-    destinations = {}
+    global destinations_obj
+    destinations_obj = {}
     info = agent_info()
-    destinations.update({info[2]:info[0]})
+    destinations_obj.update({info[2]:info[0]})
     info = find_asteroids()
-    destinations.update({info[2]:info[0]})
+    destinations_obj.update({info[2]:info[0]})
     return
 
 
 def destination_choice():
     quick_choice = {}
     print("\nFrom these choices:")
-    for index, destination_type in enumerate(destinations.keys(), start=1):
+    for index, destination_type in enumerate(destinations_obj.keys(), start=1):
         print(f"{index}. {destination_type}")
         quick_choice.update({index:destination_type})
 
-    num_choice = int(input("\nWhich numbered destination is correct?\n"))
-    waypoint_name = quick_choice.get(num_choice)
-    print('Testing Waypoint #1', waypoint_name)
+    question = "\nWhich numbered destination is correct?\n"
+    choice = num_choice(question)
+    waypoint_name = quick_choice.get(choice)
     return waypoint_name
 
 
@@ -277,19 +354,45 @@ def detailed_navigate_info(navigate_info):
     return (arrival_in)
 
 
+def navigate_ship():
+    global arrival_in, ship_symbol, payload, waypoint_name, waypoint
+    try:
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/navigate"
+    except NameError:
+        return None
+    
+    if 'destinations' not in globals():
+        find_destinations()
+
+    try:
+        waypoint_name = destination_choice()
+        waypoint = destinations_obj.get(waypoint_name)
+        payload = {"waypointSymbol": waypoint}
+        exp_status = 200
+        navigate_info = post_request(url, payload, exp_status)
+        arrival_in = detailed_navigate_info(navigate_info) 
+        dock_choice(arrival_in, ship_symbol, payload)
+
+    except NameError:
+        traceback.print_exc()
+        return None
+    
+    
+#########################              Docking             ###############################
 
 def docking():
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/dock"
-        post_request(url, payload)
+        payload = {}
+        exp_status = 201
+
+        post_request(url, payload, exp_status)
         refuel_choice(ship_symbol)
 
     except NameError:
         traceback.print_exc() 
         return None
-
-
-### In time, make the sleep function asynchronous ###
+    
 
 def dock_choice(arrival_in, ship_symbol, payload):
     dock_choice = "\nShould we dock at our destination?\n"
@@ -307,6 +410,19 @@ def dock_choice(arrival_in, ship_symbol, payload):
     except NameError:
         return None
 
+
+#########################              Orbiting/Refueling            ###############################
+
+
+def orbit():
+    try:
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/orbit"
+        exp_status = 200
+        payload = {}
+        post_request(url, payload, exp_status)
+
+    except NameError: 
+        return None
 
 
 def refuel():
@@ -333,57 +449,17 @@ def refuel_choice(ship_symbol):
         
     except NameError:
         return None
-    
 
 
-def orbit():
-    try:
-        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/orbit"
-        exp_status = 200
-        payload = {}
-        post_request(url, payload, exp_status)
 
-    except NameError: 
-        return None
-
-
-def extract():
-    try:
-        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
-        exp_status = 201
-        payload = {}
-        extract_info = post_request(url, payload, exp_status)
-        detailed_extraction_info(extract_info)
-
-    except NameError:
-        print("\nName 'ship_symbol' is not defined, run start_up()")
-        # traceback.print_exc()   
-        return None
-
-
-##### Extract() is now failing silently, no bueno
-
-
-def detailed_extraction_info(extract_info):
-    extr_material = extract_info['data']['extraction']['yield']['symbol']
-    extr_amount = extract_info['data']['extraction']['yield']['units']
-    cooldown = extract_info['data']['cooldown']['remainingSeconds']
-    cargo_capacity = extract_info['data']['cargo']['capacity']
-    cargo_current = extract_info['data']['cargo']['units']
-    cargo_index = cargo_current/cargo_capacity
-    extr_index = extr_amount/cargo_capacity
-    print("\nCooldown:", cooldown, 'secs')
-    print("Material:", extr_material,'- Amount:', extr_amount)
-    percentage_format("Cargo fill", cargo_index)
-    percentage_format("Last load", extr_index)
-    return
+#########################              Selling cargo           ###############################
 
 
 def market_data():
     try:
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
     except NameError:
-        traceback.print_exc()
+        print('NameError, something in the request url is wrong')
         return None
     
     info = get_request(url)
@@ -395,62 +471,34 @@ def market_data():
         sell_price = goods['sellPrice']
         print(goods_name,'-', float(sell_price))
 
-    ("Would you like to make sale?")         
+    ("Would you like to make a sale?")         
     return None
 
 
+def cargo_choice():
+    quick_choice = {}
+    print("\nFrom these choices:")
+    for index, cargo_type in enumerate(cargo_obj.keys(), start=1):
+        print(f"{index}. {cargo_type}")
+        quick_choice.update({index:cargo_type})
 
-#########################              POST REQUESTS               ###############################
+    question = "\nWhich numbered cargo to sell?\n"
+    choice = num_choice(question)
+    cargo_choice = quick_choice.get(choice)
+    units = cargo_obj.get(cargo_choice, [])
+    return cargo_choice, units
 
 
-
-def navigate_ship():
-    global arrival_in, ship_symbol, payload, waypoint_name, waypoint
+def sell_cargo():
     try:
-        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/navigate"
-    except NameError:
-        return None
-    
-    if 'destinations' not in globals():
-        find_destinations()
-
-    try:
-        waypoint_name = destination_choice()
-        waypoint = destinations.get(waypoint_name)
-        payload = {"waypointSymbol": waypoint}
-        exp_status = 200
-        navigate_info = post_request(url, payload, exp_status)
-        arrival_in = detailed_navigate_info(navigate_info) 
-        dock_choice(arrival_in, ship_symbol, payload)
-
-    except NameError:
-        traceback.print_exc()
-        return None
-
-
-def purchase_ship():
-    try:
-        url = "https://api.spacetraders.io/v2/my/ships"
-    except Exception:    
-        return None
-    
-    print('From these choices:')
-    for number, ship in ships_dict.items():
-        print(f"{number}. {ship}")
-    
-    num_choice = input("Which numbered ship would you want? ")
-    payload = {"shipType": ships_dict.get(int(num_choice)), "waypointSymbol": shipyard}
-    exp_status = 201
-    
-    post_request(url, payload, exp_status)
-
-
-def accept_contract():
-    try:
-        url = f"https://api.spacetraders.io/v2/my/contracts/{contractId}/accept"
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/sell"
     except NameError:   
         return None
     
-    payload = {}
-    exp_status = 200
-    post_request(url, payload, exp_status)
+    chosen, units = cargo_choice()
+    payload = {"symbol": chosen, "units": units}
+    exp_status = 201
+    response = post_request(url, payload, exp_status)
+    if response is not None:
+        cargo_obj[chosen] = [] 
+    return
