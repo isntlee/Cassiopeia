@@ -7,7 +7,6 @@ from sys import exit
 def start_up():
     agent_info()
     list_own_ships()
-    ship_status()
 
 
 def get_request(url):
@@ -109,25 +108,46 @@ def agent_info():
 
 
 def list_own_ships():
-    global ship_symbol
+    global ship_symbol, no_ships, ship_symbols
     url = "https://api.spacetraders.io/v2/my/ships"
     info = get_request(url)
     ship_symbol = info['data'][0]['symbol']
+    no_ships = info['meta']['total']
+    ship_symbols = []
+    for i in range(no_ships):
+        n = i
+        try:
+            ship_symbols.append(info['data'][n]['symbol'])
+        except IndexError:
+            pass
+    print("Ships: ", ship_symbols)
     return
 
 
-def ship_status():
-    global ship_symbol, cargo_index, cooldown, fuel_index
+def change_ship():
+    global ship_symbol
+    n = int(ship_symbol[-1])
+    if n < no_ships:
+        n += 1
+    elif n > 0:
+        n -= 1
+    changed_ship = ship_symbols[n-1]
+    ship_symbol = changed_ship
+    return changed_ship
+
+
+def ship_status(ship_symbol):
+    global cargo_index, cooldown, fuel_index
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}"
     except NameError:
         return None
     
     status_info = get_request(url)
-
+    time.sleep(1)
     ship_name = status_info['data']['registration']['name']
     ship_role = status_info['data']['registration']['role']
-    print(' ')
+    print('\n\n')
     print(ship_name, '/ Role:', ship_role)
     
     status = status_info['data']['nav']['status']
@@ -249,7 +269,7 @@ def find_asteroids():
     return None
 
 
-def extract():
+def extract(ship_symbol):
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
         exp_status = 201
@@ -393,7 +413,7 @@ def dock_choice(arrival_in, ship_symbol, payload):
         if proceed:
             print("\nDocking on arrival, in c.", arrival_in, "secs\n" )
             time.sleep(arrival_in)
-            docking(ship_symbol, payload)
+            docking()
         else:
             print("\nYou can also chooose on arrival, in c.",arrival_in,"secs\n")
             return
@@ -405,13 +425,14 @@ def dock_choice(arrival_in, ship_symbol, payload):
 #########################              Orbiting/Refueling            ###############################
 
 
-def orbit():
+def orbit(ship_symbol):
+    global orbit_bool
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/orbit"
         exp_status = 200
         payload = {}
         post_request(url, payload, exp_status)
-        print("\nHeading into orbit now")
+        orbit_bool = True
 
     except NameError:
         print("\nError - in orbit, about to.. ? ")  
@@ -477,7 +498,7 @@ def cargo_choice(cargo_obj):
 
     # question = "\nWhich numbered cargo to sell?\n"
     # choice = num_choice(question)
-    
+
     choice = 2
     cargo_choice = quick_choice.get(choice)
     units = cargo_obj.get(cargo_choice, [])
@@ -543,28 +564,40 @@ def ending_script():
 
     start_up()
     time.sleep(1)
-    orbit()
+    ship_status(ship_symbol)
+    time.sleep(1)
+    orbit(ship_symbol)
     limit = float(0.95)
 
     while True:
         try:
+
             if cargo_index > limit: 
                 try:
                     docking()
                     sell_cargo()
+                    time.sleep(1)
                     ending_script()
-                    
+
                 except Exception:
                     traceback.print_exc()
                     return
             
             else: 
-                extract()
-                time.sleep(cooldown)
-                  
+                changed_ship = change_ship()
+                ship_status(changed_ship)
+                time.sleep(1)
+
+                try:
+                    orbit(changed_ship)
+                    extract(changed_ship)
+                    time.sleep(cooldown/2)
+
+                except Exception:
+                    traceback.print_exc()   
+
         except Exception:
-            print('Error, and killing it here')
             traceback.print_exc()
-            break
+            
 
             
