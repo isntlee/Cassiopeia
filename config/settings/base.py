@@ -80,7 +80,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "gemini.users",
     "apps.testing",
-    "apps.agents",
+    "apps.markets",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
