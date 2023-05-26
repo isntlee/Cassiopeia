@@ -15,6 +15,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     path("markets/", include("apps.markets.urls", namespace="markets")),
+    path("extractions/", include("apps.extractions.urls", namespace="extractions")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

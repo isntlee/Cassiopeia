@@ -81,6 +81,7 @@ LOCAL_APPS = [
     "gemini.users",
     "apps.testing",
     "apps.markets",
+    "apps.extractions",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

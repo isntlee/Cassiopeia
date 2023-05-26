@@ -1,9 +1,7 @@
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from .models import  Extraction
-from markets.models import Good, Market
-
-from apps.testing.views import get_request
+from .models import Extraction
+from apps.testing.views import post_request
 
 
 class ExtractionCreateView(CreateView):
@@ -12,35 +10,49 @@ class ExtractionCreateView(CreateView):
     
     def form_valid(self, form):
         # get the request URL data
-        home_system = 'X1-VS75'
-        waypoint = 'X1-VS75-67965Z' 
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
-        info  = get_request(url)
+        ship_symbol = 'MEDLOCK-1'
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
+        payload = {}
 
-        # create a Market object for the market
+        # MUST REMOVE THE exp_status variable
+        exp_status = 201
+
+        info  = post_request(url, payload, exp_status)
+
+        print(' ')
+        print('info', info)
+        print(' ')
+
         data = info.get('data', [])
-        market_name = data['symbol']
+        # create a Market object for the market
         
-        prev_obj = Market.objects.filter(symbol=market_name)
+        extraction = data['extraction']
+        ship = extraction['shipSymbol']
+        extracted = extraction['yield']['symbol']
+        units = extraction['yield']['units']
 
-        if prev_obj:
-            prev_obj.delete()
+        cooldown = data['cooldown']['remainingSeconds']
+        cargo_capacity = data['cargo']['capacity']
+        units_held = data['cargo']['units']
+        cargo_fill = units_held/cargo_capacity
 
-        market_obj = Market.objects.create(symbol=market_name)
-        market_obj.save()
+        if cargo_fill == 1.00:
+            full_cargo = True
+        else: 
+            full_cargo = False
 
-        # create Good objects for each trade good and link them to the Market object
-        # data = data.get('data', [])
-        for goods in data['tradeGoods']:
-            goods_name = goods['symbol']
-            trade_volume = goods['tradeVolume']
-            supply = goods['supply']
-            purchase_price = goods['purchasePrice']
-            sell_price = goods['sellPrice']
-            good = Good.objects.create(symbol=goods_name, tradeVolume=trade_volume, supply=supply,
-                                        purchasePrice=purchase_price, sellPrice=sell_price, market=market_obj)
-            good.save()
+        extraction_obj = Extraction.objects.create(
+            ship=ship,
+            extracted=extracted,
+            units=units,
+            cooldown=cooldown,
+            cargo_capacity=cargo_capacity,
+            units_held=units_held,
+            cargo_fill = cargo_fill, 
+            full_cargo=full_cargo
+        )        
 
+        extraction_obj.save()
 
         return super().form_valid(form)
 
@@ -48,4 +60,4 @@ class ExtractionCreateView(CreateView):
         # redirect to a success page after data is saved
         return reverse_lazy('about')
 
-    template_name = 'markets/testing.html'
+    template_name = 'extractions/testing.html'

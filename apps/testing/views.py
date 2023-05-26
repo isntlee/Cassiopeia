@@ -18,34 +18,22 @@ def get_request(url):
     headers = {"Accept": "application/json",
                 "Authorization": env("BEARER")
     }
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
-        raise
-    except Exception as err:
-        print(f'Other error occurred: {err}')
-        raise
-
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        get_error(response)
+    
     return response.json()
 
 
-def post_request(url, payload):
+def post_request(url, payload, exp_status):
     headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": env("BEARER")
     }
-    try:
-        response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()
-    except HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
-        raise
-    except Exception as err:
-        print(f'Other error occurred: {err}')
-        raise
-
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code != exp_status:
+        get_error(response)
+    
     return response.json()
 
 
@@ -243,18 +231,21 @@ def purchase_ship():
     
     choice = num_choice("Which numbered ship would you want? ")
     payload = {"shipType": ships_obj.get(int(choice)), "waypointSymbol": shipyard}
+    exp_status = 201
     
-    post_request(url, payload)
+    post_request(url, payload, exp_status)
+
 
 
 #########################              Extraction             ###############################
 
 
 def extract(ship_symbol):
-    try:
+    try:  
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
+        exp_status = 201
         payload = {}
-        extract_info = post_request(url, payload)
+        extract_info = post_request(url, payload, exp_status)
         detailed_extraction_info(extract_info)
 
     except Exception:
@@ -303,7 +294,8 @@ def accept_contract():
         return None
     
     payload = {}
-    post_request(url, payload)
+    exp_status = 200
+    post_request(url, payload, exp_status)
 
 
 #########################              Navigation             ###############################
@@ -392,7 +384,8 @@ def navigate_ship():
         waypoint_name = destination_choice()
         waypoint = destinations_obj.get(waypoint_name)
         payload = {"waypointSymbol": waypoint}
-        navigate_info = post_request(url, payload)
+        exp_status = 200
+        navigate_info = post_request(url, payload, exp_status)
         arrival_in = detailed_navigate_info(navigate_info) 
         dock_choice(arrival_in, ship_symbol, payload)
 
@@ -406,8 +399,9 @@ def docking():
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/dock"
         payload = {}
+        exp_status = 200
 
-        post_request(url, payload)
+        post_request(url, payload, exp_status)
         print("\nDocking now" )
         if fuel_index < 0.33:
             refuel()
@@ -437,8 +431,9 @@ def orbit(ship_symbol):
     global orbit_bool
     try:
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/orbit"
+        exp_status = 200
         payload = {}
-        post_request(url, payload)
+        post_request(url, payload, exp_status)
         orbit_bool = True
 
     except NameError:
@@ -524,7 +519,8 @@ def sell_cargo():
     cargo_obj = cargo_status()
     chosen, units = cargo_choice(cargo_obj)
     payload = {"symbol": chosen, "units": units}
-    response = post_request(url, payload)
+    exp_status = 201
+    response = post_request(url, payload, exp_status)
     
     if response is not None:
         cargo_obj[chosen] = 0

@@ -30,8 +30,8 @@ class TradeGood(models.Model):
     supply = models.CharField(max_length=30, null=True, blank=True)
     purchasePrice = models.IntegerField(null=True, blank=True)
     sellPrice = models.IntegerField(null=True, blank=True)
-    markets = models.ManyToManyField(Market, through='MarketTrade')
     good = models.ForeignKey(Good, related_name='tradegoods', on_delete=models.CASCADE)
+    markets = models.ManyToManyField(Market, through='MarketTrade')
 
     def __str__(self):
         return self.symbol
