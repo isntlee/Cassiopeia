@@ -13,15 +13,30 @@ class Market(models.Model):
 
     def __str__(self):
         return self.symbol
-    
+
 
 class Good(models.Model):
     symbol = models.CharField(max_length=30)
-    tradeVolume = models.IntegerField(null=True, blank=True)
-    supply = models.CharField(max_length=30, null=True, blank=True)
-    market = models.ForeignKey(Market, related_name='goods', on_delete=models.CASCADE)
-    purchasePrice = models.IntegerField(null=True, blank=True)
-    sellPrice = models.IntegerField(null=True, blank=True)
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=500)
 
     def __str__(self):
         return self.symbol
+
+
+class TradeGood(models.Model):
+    symbol = models.CharField(max_length=30)
+    tradeVolume = models.IntegerField(null=True, blank=True)
+    supply = models.CharField(max_length=30, null=True, blank=True)
+    purchasePrice = models.IntegerField(null=True, blank=True)
+    sellPrice = models.IntegerField(null=True, blank=True)
+    markets = models.ManyToManyField(Market, through='MarketTrade')
+    good = models.ForeignKey(Good, related_name='tradegoods', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.symbol
+    
+
+class MarketTrade(models.Model):
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+    tradegood = models.ForeignKey(TradeGood, on_delete=models.CASCADE)

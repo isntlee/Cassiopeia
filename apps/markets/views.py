@@ -1,6 +1,6 @@
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from .models import  Market, Good
+from .models import  Market, TradeGood, Good
 
 from apps.testing.views import get_request
 
@@ -30,18 +30,36 @@ class MarketCreateView(CreateView):
 
         # create Good objects for each trade good and link them to the Market object
         # data = data.get('data', [])
-        for goods in data['tradeGoods']:
-            goods_name = goods['symbol']
-            trade_volume = goods['tradeVolume']
-            supply = goods['supply']
-            purchase_price = goods['purchasePrice']
-            sell_price = goods['sellPrice']
-            good = Good.objects.create(symbol=goods_name, tradeVolume=trade_volume, supply=supply,
-                                        purchasePrice=purchase_price, sellPrice=sell_price, market=market_obj)
-            good.save()
+        
+        for goods in data['exchange']:
+            symbol = goods['symbol']
+            name = goods['name']
+            description = goods['description']
 
+            prev_obj = Good.objects.filter(symbol__exact=symbol)
+            if prev_obj.exists():
+                prev_obj.delete()
+            
+            good_obj = Good.objects.create(symbol=symbol, name=name, description=description)
+            good_obj.save()
+
+
+        for tradegoods in data['tradeGoods']:
+            symbol = tradegoods['symbol']
+            trade_volume = tradegoods['tradeVolume']
+            supply = tradegoods['supply']
+            purchase_price = tradegoods['purchasePrice']
+            sell_price = tradegoods['sellPrice']
+            good_obj = Good.objects.get(symbol__exact=symbol)
+            tradegood_obj = TradeGood.objects.create(symbol=symbol, tradeVolume=trade_volume, supply=supply,
+                                        purchasePrice=purchase_price, sellPrice=sell_price, 
+                                        good=good_obj)
+            
+            tradegood_obj.markets.set([market_obj])
+            tradegood_obj.save()
 
         return super().form_valid(form)
+
 
     def get_success_url(self):
         # redirect to a success page after data is saved

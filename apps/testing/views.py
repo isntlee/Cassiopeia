@@ -477,25 +477,26 @@ def refuel_choice(ship_symbol):
 
 #########################              Selling cargo   (MARKET)        ###############################
 
+############  DONE ##############
 
-def market_data():
-    try:
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
-    except NameError:
-        print('NameError, something in the request url is wrong')
-        return None
+# def market_data():
+#     try:
+#         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
+#     except NameError:
+#         print('NameError, something in the request url is wrong')
+#         return None
     
-    info = get_request(url)
-    data = info.get('data', [])
+#     info = get_request(url)
+#     data = info.get('data', [])
 
-    print("\nCurrent prices at", waypoint_name,"-", waypoint,"\n")
-    for goods in data['tradeGoods']:
-        goods_name = goods['symbol']
-        sell_price = goods['sellPrice']
-        print(goods_name,'-', float(sell_price))
+#     print("\nCurrent prices at", waypoint_name,"-", waypoint,"\n")
+#     for goods in data['tradeGoods']:
+#         goods_name = goods['symbol']
+#         sell_price = goods['sellPrice']
+#         print(goods_name,'-', float(sell_price))
 
-    ("Would you like to make a sale?")         
-    return None
+#     ("Would you like to make a sale?")         
+#     return None
 
 
 def cargo_choice(cargo_obj):
