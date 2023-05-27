@@ -7,7 +7,7 @@ class MarketAdmin(admin.ModelAdmin):
 
 class TradeGoodAdmin(admin.ModelAdmin):
     list_display = ['symbol', 'sellPrice', 'purchasePrice']
-    fields = ['symbol', 'suppy', 'tradeVolume']
+    fields = ['symbol', 'supply', 'tradeVolume']
 
 class GoodAdmin(admin.ModelAdmin):
     list_display = ['symbol']

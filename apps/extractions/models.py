@@ -17,7 +17,7 @@ class Extraction(models.Model):
     def save(self, *args, **kwargs):
         if not self.ship:
             return
-        self.extraction_name = f"{self.id}.   {self.ship} : {self.extracted}"
+        self.extraction_name = f"{self.id}-{self.ship}-{self.extracted}"
         super(Extraction, self).save(*args, **kwargs)
 
     def __str__(self):

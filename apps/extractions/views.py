@@ -6,7 +6,6 @@ from apps.testing.views import post_request
 
 class ExtractionCreateView(CreateView):
     model = Extraction
-    fields = []
     
     def form_valid(self, form):
         # get the request URL data
@@ -14,23 +13,17 @@ class ExtractionCreateView(CreateView):
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
         payload = {}
 
-        # MUST REMOVE THE exp_status variable
+        ################## MUST REMOVE: exp_status variable #########################
+        ################## AND: all the initial error chacking ######################
         exp_status = 201
 
         info  = post_request(url, payload, exp_status)
-
-        print(' ')
-        print('info', info)
-        print(' ')
-
         data = info.get('data', [])
-        # create a Market object for the market
         
         extraction = data['extraction']
         ship = extraction['shipSymbol']
         extracted = extraction['yield']['symbol']
         units = extraction['yield']['units']
-
         cooldown = data['cooldown']['remainingSeconds']
         cargo_capacity = data['cargo']['capacity']
         units_held = data['cargo']['units']
