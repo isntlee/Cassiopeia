@@ -22,6 +22,9 @@ class MarketCreateView(CreateView):
         
         prev_obj = Market.objects.filter(symbol=market_name)
 
+        ########   This should be covered in an UpdateView   #########
+        ########         NOT HERE, CHANGE NEXT TIME          #########
+
         if prev_obj:
             prev_obj.delete()
 

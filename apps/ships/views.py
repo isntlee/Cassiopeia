@@ -54,6 +54,14 @@ class ShipCreateView(CreateView):
         fuel_capacity =  data['fuel']['capacity']
         fuel_consumed =  data['fuel']['consumed']['amount']
 
+        prev_obj = Ship.objects.filter(ship_name=ship_name)
+
+        ########   This should be covered in an UpdateView   #########
+        ########         NOT HERE, CHANGE NEXT TIME          #########
+
+        if prev_obj:
+            prev_obj.delete()
+
         ship_obj = Ship.objects.create(
             ship_name=ship_name,
             faction=faction,
