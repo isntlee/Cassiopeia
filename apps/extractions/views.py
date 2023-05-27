@@ -6,7 +6,7 @@ from apps.testing.views import post_request
 
 class ExtractionCreateView(CreateView):
     model = Extraction
-    
+    fields = []
     def form_valid(self, form):
         # get the request URL data
         ship_symbol = 'MEDLOCK-1'

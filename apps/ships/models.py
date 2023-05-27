@@ -1,23 +1,29 @@
 from django.db import models
 
+
 class Ship(models.Model):
-    ship = models.CharField(max_length=60)
-    extracted = models.CharField(max_length=60)
-    units = models.IntegerField(null=True, blank=True)
-
+    ship_name = models.CharField(max_length=60)
+    faction = models.CharField(max_length=60)
+    role = models.CharField(max_length=60)
     created_at = models.DateTimeField(auto_now_add=True)
-    cooldown = models.IntegerField(null=True, blank=True)
 
-    cargo_capacity = models.IntegerField(null=True, blank=True)
-    units_held = models.IntegerField(null=True, blank=True)
-    cargo_fill = models.DecimalField(max_digits=5, decimal_places=3, null=True, blank=True)
-    full_cargo = models.BooleanField(default=False)
-    ship_name = models.CharField(max_length=200)
+    departure_symbol = models.CharField(max_length=60)
+    departure_type = models.CharField(max_length=60)
+    departure_longitude = models.IntegerField(null=True, blank=True)
+    departure_latitude = models.IntegerField(null=True, blank=True)
+
+    destination_symbol = models.CharField(max_length=60)
+    destination_type = models.CharField(max_length=60)
+    destination_longitude = models.IntegerField(null=True, blank=True)
+    destination_latitude = models.IntegerField(null=True, blank=True)
+
+    fuel_current = models.IntegerField(null=True, blank=True)
+    fuel_capacity = models.IntegerField(null=True, blank=True)
+    fuel_consumed = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.ship:
+        if not self.ship_name:
             return
-        self.ship_name = f"{self.id}-{self.ship}-{self.extracted}"
         super(Ship, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -25,3 +31,4 @@ class Ship(models.Model):
 
 
 #  Keep cargo seperate until running cargo request
+## ADD CARGO HERE 

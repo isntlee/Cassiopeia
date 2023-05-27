@@ -3,6 +3,5 @@ from .models import Extraction
 
 class ExtractionAdmin(admin.ModelAdmin):
     list_display = ['extraction_name', 'extracted', 'units' , 'created_at', 'cargo_fill']
-    fields = ['ship', 'extracted', 'units', 'cooldown','cargo_fill']
 
 admin.site.register(Extraction, ExtractionAdmin)
