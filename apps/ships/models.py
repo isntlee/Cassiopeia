@@ -21,6 +21,11 @@ class Ship(models.Model):
     fuel_capacity = models.IntegerField(null=True, blank=True)
     fuel_consumed = models.IntegerField(null=True, blank=True)
 
+    flightmode=models.CharField(max_length=60)
+    ship_status=models.CharField(max_length=60)
+    location_current=models.CharField(max_length=60)
+    location_current_type=models.CharField(max_length=60)
+
     def save(self, *args, **kwargs):
         if not self.ship_name:
             return
