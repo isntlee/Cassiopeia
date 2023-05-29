@@ -59,7 +59,6 @@ def current_ship_data(data):
                 }
 
 
-
 class ShipCreateView(CreateView):
     model = Ship
     fields = []

@@ -1,7 +1,7 @@
-from django.views.generic.edit import CreateView
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView
 from .models import  Market, TradeGood, Good
-
 from apps.testing.views import get_request
 
 
@@ -10,42 +10,30 @@ class MarketCreateView(CreateView):
     fields = []
     
     def form_valid(self, form):
-        # get the request URL data
         home_system = 'X1-VS75'
         waypoint = 'X1-VS75-67965Z' 
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
         info  = get_request(url)
 
-        # create a Market object for the market
         data = info.get('data', [])
         market_name = data['symbol']
-        
-        prev_obj = Market.objects.filter(symbol=market_name)
+        market_obj = Market.objects.filter(symbol=market_name).first()
 
-        ########   This should be covered in an UpdateView   #########
-        ########         NOT HERE, CHANGE NEXT TIME          #########
+        if market_obj:
+            pass
+        else:
+            market_obj = Market.objects.create(symbol=market_name)   
 
-        if prev_obj:
-            prev_obj.delete()
-
-        market_obj = Market.objects.create(symbol=market_name)
-        market_obj.save()
-
-        # create Good objects for each trade good and link them to the Market object
-        # data = data.get('data', [])
-        
         for goods in data['exchange']:
             symbol = goods['symbol']
             name = goods['name']
             description = goods['description']
+            good_obj = Good.objects.filter(symbol=symbol).first()
 
-            prev_obj = Good.objects.filter(symbol__exact=symbol)
-            if prev_obj.exists():
-                prev_obj.delete()
-            
-            good_obj = Good.objects.create(symbol=symbol, name=name, description=description)
-            good_obj.save()
-
+            if good_obj:
+                continue
+            else:
+                GoodCreateView.create_good(self, symbol, name, description)
 
         for tradegoods in data['tradeGoods']:
             symbol = tradegoods['symbol']
@@ -54,18 +42,69 @@ class MarketCreateView(CreateView):
             purchase_price = tradegoods['purchasePrice']
             sell_price = tradegoods['sellPrice']
             good_obj = Good.objects.get(symbol__exact=symbol)
-            tradegood_obj = TradeGood.objects.create(symbol=symbol, tradeVolume=trade_volume, supply=supply,
-                                        purchasePrice=purchase_price, sellPrice=sell_price, 
-                                        good=good_obj)
-            
-            tradegood_obj.markets.set([market_obj])
-            tradegood_obj.save()
+            tradegood_name = f"{market_obj}:{symbol}"
+            TradeGoodsCreateView.create_tradegood(self, symbol, trade_volume, supply,
+                                    purchase_price, sell_price, good_obj, market_obj, tradegood_name)
 
         return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse_lazy('about')
+    
+    template_name = 'markets/testing.html'
+    
 
+class GoodCreateView(CreateView):
+    model = Market
+    fields = []
+    template_name = 'markets/testing.html'
+
+    def create_good(self, symbol, name, description):
+        good_obj = Good.objects.create(symbol=symbol, name=name, description=description)
+        good_obj.save()
 
     def get_success_url(self):
-        # redirect to a success page after data is saved
         return reverse_lazy('about')
+    
 
+class TradeGoodsCreateView(CreateView):
+    model = Market
+    fields = []
     template_name = 'markets/testing.html'
+
+    def create_tradegood(self, symbol, trade_volume, supply,
+                    purchase_price, sell_price, good_obj,
+                    market_obj, tradegood_name):
+        
+        tradegood_obj = TradeGood.objects.filter(tradegood_name=tradegood_name).first()
+        if tradegood_obj:
+            TradeGoodUpdateView.update_ship(self, tradegood_obj.pk, symbol, trade_volume, supply,
+                                    purchase_price, sell_price, 
+                                    good_obj, market_obj, tradegood_name)
+            return redirect('about')
+        else:
+            good_obj = Good.objects.get(symbol__exact=symbol)
+            market_obj = Market.objects.get(symbol__exact=market_obj)
+            tradegood_obj = TradeGood.objects.create(symbol=symbol, tradeVolume=trade_volume, supply=supply,
+                                                purchasePrice=purchase_price, sellPrice=sell_price, 
+                                                good=good_obj, market=market_obj, tradegood_name=tradegood_name)
+            
+            tradegood_obj.save()
+
+    def get_success_url(self):
+        return reverse_lazy('about')
+    
+
+class TradeGoodUpdateView(UpdateView):
+    model = TradeGood
+    fields = []
+    template_name = 'ships/testing.html'
+
+    def update_ship(self, tradegood_obj_pk, symbol, trade_volume, supply,
+                                    purchase_price, sell_price, good_obj, market_obj, tradegood_name):
+        TradeGood.objects.filter(pk=tradegood_obj_pk).update(symbol=symbol, tradeVolume=trade_volume, supply=supply,
+                                            purchasePrice=purchase_price, sellPrice=sell_price, 
+                                            good=good_obj, market=market_obj, tradegood_name=tradegood_name)
+
+    def get_success_url(self):
+        return reverse_lazy('about')

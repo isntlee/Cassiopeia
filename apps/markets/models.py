@@ -26,17 +26,13 @@ class Good(models.Model):
 
 class TradeGood(models.Model):
     symbol = models.CharField(max_length=30)
+    tradegood_name = models.CharField(max_length=60)
     tradeVolume = models.IntegerField(null=True, blank=True)
     supply = models.CharField(max_length=30, null=True, blank=True)
     purchasePrice = models.IntegerField(null=True, blank=True)
     sellPrice = models.IntegerField(null=True, blank=True)
     good = models.ForeignKey(Good, related_name='tradegoods', on_delete=models.CASCADE)
-    markets = models.ManyToManyField(Market, through='MarketTrade')
+    market = models.ForeignKey(Market, related_name='tradegoods', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return self.symbol
-    
-
-class MarketTrade(models.Model):
-    market = models.ForeignKey(Market, on_delete=models.CASCADE)
-    tradegood = models.ForeignKey(TradeGood, on_delete=models.CASCADE)
+        return self.tradegood_name
