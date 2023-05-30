@@ -1,4 +1,5 @@
 from django.db import models
+from markets.models import Good
 
 
 class Ship(models.Model):
@@ -35,5 +36,29 @@ class Ship(models.Model):
         return self.ship_name
 
 
-#  Keep cargo seperate until running cargo request
-## ADD CARGO HERE 
+class Cargo(models.Model):
+    cargo_name = models.CharField(max_length=60)
+    cargo_capacity = models.IntegerField(null=True, blank=True)
+    units_held = models.IntegerField(null=True, blank=True)
+    cargo_fill = models.DecimalField(max_digits=5, decimal_places=3, null=True, blank=True)
+    full_cargo = models.BooleanField(default=False)
+    ship = models.OneToOneField(Ship, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if not self.ship:
+            return
+        self.cargo_name = f"{self.ship}-cargo"
+        super(Cargo, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.cargo_name
+    
+
+class CargoLoad(models.Model):
+    symbol = models.CharField(max_length=60)
+    units = models.IntegerField(null=True, blank=True)
+    good = models.ForeignKey(Good, related_name='cargogoods', on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cargo, related_name='cargoload', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.symbol

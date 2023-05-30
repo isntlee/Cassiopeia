@@ -83,6 +83,7 @@ LOCAL_APPS = [
     "apps.markets",
     "apps.extractions",
     "apps.ships",
+    "apps.navigation",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
