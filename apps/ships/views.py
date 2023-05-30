@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
-from .models import Ship
+from .models import Ship, Cargo
 from apps.testing.views import get_request
 
 
@@ -107,3 +107,65 @@ class ShipUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('about')
+    
+
+
+
+####################################################################################################################
+
+
+class CargoCreateView(CreateView):
+    model = Cargo
+    fields = []
+    
+    def form_valid(self, form):
+        shipSymbol = 'MEDLOCK-1' 
+        url = f"https://api.spacetraders.io/v2/my/ships/{shipSymbol}/cargo"
+        info  = get_request(url)
+
+        data = info.get('data', [])
+        cargo_capacity = data['cargo']['capacity']
+        units_held = data['cargo']['units']
+        cargo_fill = units_held/cargo_capacity
+
+        if cargo_fill == 1.00:
+            full_cargo = True
+        else: 
+            full_cargo = False
+
+        cargo_name = f"{shipSymbol}-cargo"
+        cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()
+
+        if cargo_obj:
+            CargoUpdateView.update_cargo(self, cargo_name, cargo_capacity, units_held, cargo_fill, )
+            return redirect('about')
+        else:
+            market_obj = Cargo.objects.create(
+                cargo_capacity=cargo_capacity,
+                units_held=units_held,
+                cargo_fill = cargo_fill, 
+                full_cargo=full_cargo
+        ) 
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse_lazy('about')
+    
+    template_name = 'navigation/testing.html'
+
+
+    class CargoUpdateView(UpdateView):
+        model = Cargo
+        fields = []
+        template_name = 'navigation/testing.html'
+
+        def update_cargo(self, tradegood_obj_pk, symbol, trade_volume, supply,
+                                        purchase_price, sell_price, good_obj, market_obj, tradegood_name):
+            Cargo.objects.filter(pk=tradegood_obj_pk).update(symbol=symbol, tradeVolume=trade_volume, supply=supply,
+                                                purchasePrice=purchase_price, sellPrice=sell_price, 
+                                                good=good_obj, market=market_obj, tradegood_name=tradegood_name)
+
+        def get_success_url(self):
+            return reverse_lazy('about')
+
+
