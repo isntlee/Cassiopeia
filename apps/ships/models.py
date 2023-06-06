@@ -45,10 +45,12 @@ class Cargo(models.Model):
     ship = models.OneToOneField(Ship, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if not self.ship:
+        if not self.cargo_name:
             return
-        self.cargo_name = f"{self.ship}-cargo"
         super(Cargo, self).save(*args, **kwargs)
+    
+    class Meta:
+        verbose_name_plural = "Cargo"
 
     def __str__(self):
         return self.cargo_name
