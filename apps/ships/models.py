@@ -1,5 +1,5 @@
 from django.db import models
-from markets.models import Good
+from apps.markets.models import Good
 
 
 class Ship(models.Model):

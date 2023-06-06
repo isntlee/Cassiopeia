@@ -5,14 +5,10 @@
 {% block content %}
 <h1>We've got this fucker now - Ships</h1>
 
-<form method="post">
+<form method="post" action="{% url 'ships:create_ship_or_cargo' %}">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create</button>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Update</button>
+    <button type="submit" name="create_ship" value="create_ship">Ship</button>
+    <button type="submit" name="create_cargo" value="create_cargo">Cargo</button>
+</form>
 
 {% endblock content %}
