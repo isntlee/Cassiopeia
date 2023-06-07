@@ -8,31 +8,29 @@ from apps.testing.views import get_request
 class MarketCreateView(CreateView):
     model = Market
     fields = []
+    template_name = 'markets/testing.html'
     
     def form_valid(self, form):
-        home_system = 'X1-VS75'
-        waypoint = 'X1-VS75-67965Z' 
+        home_system = 'X1-HQ18'
+        waypoint = 'X1-HQ18-98695F' 
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
         info  = get_request(url)
 
         data = info.get('data', [])
+        print('\n\n Data: ', data, '\n\n')
         market_name = data['symbol']
         market_obj = Market.objects.filter(symbol=market_name).first()
 
-        if market_obj:
-            pass
-        else:
+        if not market_obj:
             market_obj = Market.objects.create(symbol=market_name)   
-
+            
         for goods in data['exchange']:
             symbol = goods['symbol']
             name = goods['name']
             description = goods['description']
             good_obj = Good.objects.filter(symbol=symbol).first()
 
-            if good_obj:
-                continue
-            else:
+            if not good_obj:
                 GoodCreateView.create_good(self, symbol, name, description)
 
         for tradegoods in data['tradeGoods']:
@@ -51,9 +49,7 @@ class MarketCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy('about')
     
-    template_name = 'markets/testing.html'
     
-
 class GoodCreateView(CreateView):
     model = Market
     fields = []

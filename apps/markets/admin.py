@@ -5,7 +5,7 @@ class MarketAdmin(admin.ModelAdmin):
     list_display = ['symbol', 'created_at']
 
 class TradeGoodAdmin(admin.ModelAdmin):
-    list_display = ['tradegood_name', 'sellPrice', 'purchasePrice']
+    list_display = ['tradegood_name', 'sellPrice', 'purchasePrice', 'updated_at']
 
 class GoodAdmin(admin.ModelAdmin):
     list_display = ['symbol']

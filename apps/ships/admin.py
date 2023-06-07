@@ -6,7 +6,7 @@ class ShipAdmin(admin.ModelAdmin):
     list_display = ['ship_name', 'role', 'destination_type', 'fuel_current' , 'fuel_capacity']
 
 class CargoAdmin(admin.ModelAdmin):
-    list_display = ['cargo_name', 'cargo_fill']
+    list_display = ['cargo_name', 'cargo_fill', 'updated_at']
 
 class CargoLoadAdmin(admin.ModelAdmin):
     list_display = ['symbol', 'units', 'cargo', 'updated_at']

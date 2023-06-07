@@ -19,30 +19,18 @@ class ExtractionCreateView(CreateView):
 
         info  = post_request(url, payload, exp_status)
         data = info.get('data', [])
-        
         extraction = data['extraction']
+
         ship = extraction['shipSymbol']
         extracted = extraction['yield']['symbol']
         units = extraction['yield']['units']
         cooldown = data['cooldown']['remainingSeconds']
-        cargo_capacity = data['cargo']['capacity']
-        units_held = data['cargo']['units']
-        cargo_fill = units_held/cargo_capacity
-
-        if cargo_fill == 1.00:
-            full_cargo = True
-        else: 
-            full_cargo = False
 
         extraction_obj = Extraction.objects.create(
             ship=ship,
             extracted=extracted,
             units=units,
             cooldown=cooldown,
-            cargo_capacity=cargo_capacity,
-            units_held=units_held,
-            cargo_fill = cargo_fill, 
-            full_cargo=full_cargo
         )        
 
         extraction_obj.save()

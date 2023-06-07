@@ -42,6 +42,7 @@ class Cargo(models.Model):
     units_held = models.IntegerField(null=True, blank=True)
     cargo_fill = models.DecimalField(max_digits=5, decimal_places=3, null=True, blank=True)
     full_cargo = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
     ship = models.OneToOneField(Ship, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):

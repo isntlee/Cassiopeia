@@ -3,7 +3,6 @@ from django.db import models
 
 class Market(models.Model):
     symbol = models.CharField(max_length=60)
-    type = models.CharField(max_length=60)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -31,6 +30,7 @@ class TradeGood(models.Model):
     supply = models.CharField(max_length=30, null=True, blank=True)
     purchasePrice = models.IntegerField(null=True, blank=True)
     sellPrice = models.IntegerField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
     good = models.ForeignKey(Good, related_name='tradegoods', on_delete=models.CASCADE)
     market = models.ForeignKey(Market, related_name='tradegoods', on_delete=models.CASCADE, null=True, blank=True)
 

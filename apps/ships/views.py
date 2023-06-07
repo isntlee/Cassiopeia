@@ -154,6 +154,7 @@ class CargoCreateView(CreateView):
     def create_or_update_cargoload(self, cargo_load_list, cargo_obj):
         for cargo_load in cargo_load_list:
             current_cargo_load_obj = CargoLoad.objects.filter(symbol=cargo_load['symbol'], cargo=cargo_obj).first()
+            
             # Add the delete cargoload function after sell functions built in
 
             if current_cargo_load_obj:
