@@ -17,6 +17,7 @@ urlpatterns = [
     path("markets/", include("apps.markets.urls", namespace="markets")),
     path("extractions/", include("apps.extractions.urls", namespace="extractions")),
     path("ships/", include("apps.ships.urls", namespace="ships")),
+    path("navigation/", include("apps.navigation.urls", namespace="navigation")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

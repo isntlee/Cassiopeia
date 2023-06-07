@@ -4,5 +4,5 @@ from . import views
 app_name = 'navigation'
 
 urlpatterns = [
-    path(("testing/"), views.WaypointsCreateView.as_view(), name="testing"), 
+    path(("testing/"), views.WaypointCreateView.as_view(), name="testing"), 
 ]
