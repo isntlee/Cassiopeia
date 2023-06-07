@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
-from .models import Ship, Cargo
+from apps.markets.models import Good
+from .models import Ship, Cargo, CargoLoad
 from apps.testing.views import get_request
 
 
@@ -129,12 +130,15 @@ class CargoCreateView(CreateView):
             full_cargo = False
 
         cargo_name = f"{shipSymbol}-cargo"
+        cargo_load_list = data['inventory']
         ship_obj = Ship.objects.filter(ship_name=shipSymbol).first()
-        cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()
+        cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()   
 
         if cargo_obj:
+            self.create_or_update_cargoload(cargo_load_list, cargo_obj)
             CargoUpdateView.update_cargo(self, cargo_obj.id, cargo_capacity, units_held, cargo_fill, full_cargo)
             return redirect('about')
+        
         else:
             cargo_obj = Cargo.objects.create(
                 cargo_name = cargo_name,
@@ -143,13 +147,32 @@ class CargoCreateView(CreateView):
                 cargo_fill = cargo_fill, 
                 full_cargo=full_cargo, 
                 ship=ship_obj,
-        ) 
+        )      
         
         return super().form_valid(form)
-        
+         
+    def create_or_update_cargoload(self, cargo_load_list, cargo_obj):
+        for cargo_load in cargo_load_list:
+            current_cargo_load_obj = CargoLoad.objects.filter(symbol=cargo_load['symbol'], cargo=cargo_obj).first()
+            # Add the delete cargoload function after sell functions built in
+
+            if current_cargo_load_obj:
+                    print('\n\n CargoLoad_units: ', current_cargo_load_obj.units , '\n\n')
+                    current_cargo_load_obj.units = cargo_load['units']
+                    current_cargo_load_obj.save()
+
+            else:    
+                good_obj = Good.objects.filter(symbol=cargo_load['symbol']).first()   
+                CargoLoad.objects.create(
+                        symbol = cargo_load['symbol'],
+                        units = cargo_load['units'],
+                        good = good_obj,
+                        cargo = cargo_obj
+                )
+    
     def get_success_url(self):
         return reverse_lazy('about')
-    
+        
     template_name = 'navigation/testing.html'
 
 
@@ -158,8 +181,8 @@ class CargoUpdateView(UpdateView):
     fields = []
     template_name = 'navigation/testing.html'
 
-    def update_cargo(self, cargo_obj_pk, cargo_capacity, units_held, cargo_fill, full_cargo):
-        filtered = Cargo.objects.filter(pk=cargo_obj_pk)
+    def update_cargo(self, cargo_pk, cargo_capacity, units_held, cargo_fill, full_cargo):
+        filtered = Cargo.objects.filter(pk=cargo_pk)
         filtered.update(
             cargo_capacity=cargo_capacity,
             units_held=units_held,
@@ -184,3 +207,4 @@ def create_ship_or_cargo(request):
             return response
         
     return render(request, 'ships/testing.html')
+

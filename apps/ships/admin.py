@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Ship, Cargo
+from .models import Ship, Cargo, CargoLoad
 
 
 class ShipAdmin(admin.ModelAdmin):
@@ -8,5 +8,10 @@ class ShipAdmin(admin.ModelAdmin):
 class CargoAdmin(admin.ModelAdmin):
     list_display = ['cargo_name', 'cargo_fill']
 
+class CargoLoadAdmin(admin.ModelAdmin):
+    list_display = ['symbol', 'units', 'cargo', 'updated_at']
+
+
 admin.site.register(Ship, ShipAdmin)
 admin.site.register(Cargo, CargoAdmin)
+admin.site.register(CargoLoad, CargoLoadAdmin)

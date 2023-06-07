@@ -61,6 +61,8 @@ class CargoLoad(models.Model):
     units = models.IntegerField(null=True, blank=True)
     good = models.ForeignKey(Good, related_name='cargogoods', on_delete=models.CASCADE)
     cargo = models.ForeignKey(Cargo, related_name='cargoload', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.symbol
