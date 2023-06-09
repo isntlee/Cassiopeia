@@ -14,9 +14,9 @@ def start_up():
     list_own_ships()
 
 
-def get_request(url):
+def get_request(url, user_token):
     headers = {"Accept": "application/json",
-                "Authorization": env("BEARER")
+                "Authorization": f"Bearer {user_token}"
     }
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
