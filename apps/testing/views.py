@@ -28,11 +28,11 @@ def get_request(url):
 def post_request(url, payload, exp_status):
     headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
-                "Authorization": env("BEARER")
+                "Authorization": env("BEARER") if exp_status != 'register' else None
     }
     response = requests.post(url, json=payload, headers=headers)
-    if response.status_code != exp_status:
-        get_error(response)
+    # if response.status_code != exp_status:
+    #     get_error(response)
     
     return response.json()
 

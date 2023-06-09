@@ -104,6 +104,7 @@ class ShipUpdateView(UpdateView):
     template_name = 'ships/testing.html'
 
     def update_ship(self, ship_pk, data_current):
+        print("\n\n Request object: ", self.request.user, "\n\n")
         Ship.objects.filter(pk=ship_pk).update(**data_current)
 
     def get_success_url(self):
