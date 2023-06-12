@@ -1,7 +1,7 @@
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 from .models import Extraction
-from apps.testing.views import post_request
+from testing.views import post_request
 
 
 class ExtractionCreateView(CreateView):

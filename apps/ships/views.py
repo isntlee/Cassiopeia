@@ -4,7 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
 from apps.markets.models import Good
 from .models import Ship, Cargo, CargoLoad
-from apps.testing.views import get_request
+from testing.views import get_request,post_request
+from apps.navigation.views import find_destinations
 
 
 def current_ship_data(data):
@@ -66,10 +67,11 @@ class ShipCreateView(CreateView):
     template_name = 'ships/testing.html'
     
     def form_valid(self, form):
-        ship_symbol = 'MEDLOCK-1'
+        ship_symbol = 'TESTING115-1'
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}"
 
-        info  = get_request(url)
+        agent_token =  self.request.user.agents.first().agent_token
+        info  = get_request(url, agent_token)
         data = info.get('data', [])
         data_current = current_ship_data(data)
         
@@ -104,7 +106,6 @@ class ShipUpdateView(UpdateView):
     template_name = 'ships/testing.html'
 
     def update_ship(self, ship_pk, data_current):
-        print("\n\n Request object: ", self.request.user, "\n\n")
         Ship.objects.filter(pk=ship_pk).update(**data_current)
 
     def get_success_url(self):
@@ -209,4 +210,5 @@ def create_ship_or_cargo(request):
             return response
         
     return render(request, 'ships/testing.html')
+
 

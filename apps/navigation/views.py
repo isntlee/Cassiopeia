@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .models import  Waypoint, Trait
-from apps.testing.views import get_request
+from testing.views import get_request
 
 
 class WaypointCreateView(CreateView):
@@ -43,3 +43,14 @@ class WaypointCreateView(CreateView):
         return reverse_lazy('about')
     
     template_name = 'navigation/testing.html'
+
+
+# Probably goin to require object class??
+def find_destinations(system, waypoint_type):
+    for waypoint in Waypoint.objects.filter(systemSymbol=system):
+        for trait in waypoint.traits.all():
+            if trait.symbol == waypoint_type:
+                print('\n\n', waypoint.waypoint_name, '\n\n')
+                destinations = [].append(waypoint)
+                return destinations
+            

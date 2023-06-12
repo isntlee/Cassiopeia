@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
 from .models import  Market, TradeGood, Good
-from apps.testing.views import get_request
+from testing.views import get_request
 
 
 class MarketCreateView(CreateView):

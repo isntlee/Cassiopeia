@@ -79,7 +79,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "gemini.users",
-    "apps.testing",
+    "testing",
     "apps.markets",
     "apps.extractions",
     "apps.ships",

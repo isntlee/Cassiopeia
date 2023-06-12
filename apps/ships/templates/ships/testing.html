@@ -3,12 +3,13 @@
 {% block title %}Server Error{% endblock %}
 
 {% block content %}
-<h1>We've got this fucker now - Ships</h1>
+<h2>Ships</h2>
 
 <form method="post" action="{% url 'ships:create_ship_or_cargo' %}">
     {% csrf_token %}
     <button type="submit" name="create_ship" value="create_ship">Ship</button>
     <button type="submit" name="create_cargo" value="create_cargo">Cargo</button>
+    <button type="submit" name="navigate_ship" value="navigate_ship">Navigate</button>
 </form>
 
 {% endblock content %}

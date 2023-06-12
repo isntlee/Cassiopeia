@@ -2,7 +2,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
 from django.views.generic.edit import CreateView, UpdateView
 from .models import Agent
-from apps.testing.views import get_request, post_request
+from testing.views import get_request, post_request
 
 
 class AgentCreateView(CreateView):
@@ -16,7 +16,7 @@ class AgentCreateView(CreateView):
             exp_status = 'register'
             payload = {
                 "faction": "COSMIC",
-                "symbol": "TESTING114",
+                "symbol": "TESTING115",
                 "email": "testing@testing.com"
             }
             info  = post_request(url, payload, exp_status)
@@ -28,7 +28,6 @@ class AgentCreateView(CreateView):
             agent_choice = 0
             user_token = Agent.objects.all()[agent_choice].agent_token
             info  = get_request(url, user_token)
-            print("\n\n Info : ", info, "\n\n")
             agent_data = info['data']
    
         agent_obj = Agent.objects.filter(symbol=agent_data['symbol']).first()
