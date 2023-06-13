@@ -2,25 +2,24 @@
 {% block content %}
 
 
-
-<form action="{% url 'agents:agent_create' %}" style="display: inline-block;">
+<form action="{% url 'agents:agent_list' %}" style="display: inline-block;">
     <button type="submit"value="agents">Agents</button>
 </form>
 
-<form action="{% url 'extractions:testing' %}" style="display: inline-block;">
-    <button type="submit" name="extractions_root" value="extractions_root">Extractions</button>
+<form action="{% url 'extractions:extraction_list' %}" style="display: inline-block;">
+    <button type="submit" value="extractions">Extractions</button>
 </form>
 
-<form action="{% url 'markets:market_create' %}" style="display: inline-block;">
-    <button type="submit" name="markets_root" value="markets_root">Markets</button>
+<form action="{% url 'markets:market_list' %}" style="display: inline-block;">
+    <button type="submit" value="markets">Markets</button>
 </form>
 
-<form action="{% url 'navigation:testing' %}" style="display: inline-block;">
-    <button type="submit" name="navigation_root" value="navigation_root">Navigation</button>
+<form action="{% url 'navigation:waypoint_list' %}" style="display: inline-block;">
+    <button type="submit" value="navigation">Navigation</button>
 </form>
 
-<form action="{% url 'ships:create_ship_or_cargo' %}" style="display: inline-block;">
-    <button type="submit" name="ships_root" value="ships_root">Ships</button>
+<form action="{% url 'ships:ship_list' %}" style="display: inline-block;">
+    <button type="submit" value="ships">Ships</button>
 </form>
 
 

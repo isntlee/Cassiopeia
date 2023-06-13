@@ -4,10 +4,23 @@
 
 {% block content %}
 <h2>Extractions</h2>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create</button>
+    
+    <form method="post" action="{% url 'extractions:extraction_create' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create</button>
+    </form>
+    
+    <h2>Extraction objects</h2>
+        <ul>
+        {% for extraction in object_list %}
+            <li>{{ extraction.ship }}</li>
+            <li>{{ extraction.extracted  }}</li>
+            <li>{{ extraction.units }}</li>
+            <li>{{ extraction.cooldown }}</li>
+            <li>{{ extraction.extraction_name }}</li>
+            <li></li>
+        {% endfor %}
+        </ul>
 
 {% endblock content %}

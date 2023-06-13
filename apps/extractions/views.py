@@ -1,4 +1,4 @@
-from django.views.generic.edit import CreateView
+from django.views.generic import CreateView,ListView
 from django.urls import reverse_lazy
 from .models import Extraction
 from testing.views import post_request
@@ -41,4 +41,10 @@ class ExtractionCreateView(CreateView):
         # redirect to a success page after data is saved
         return reverse_lazy('about')
 
+    template_name = 'extractions/testing.html'
+
+
+class ExtractionListView(ListView):
+    model = Extraction
+    fields = []
     template_name = 'extractions/testing.html'

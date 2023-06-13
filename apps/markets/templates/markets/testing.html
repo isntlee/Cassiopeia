@@ -5,18 +5,22 @@
 {% block content %}
 <h2>Markets</h2>
 
-<form method="post">
+<form method="post" action="{% url 'markets:market_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Create</button>
+</form>
 
 
 <h2>Market objects</h2>
     <ul>
     {% for market in object_list %}
         <li>{{ market.symbol }}</li>
+        <li>{{ market.hq }}</li>
+        <li>{{ market.faction }}</li>
+        <li>{{ market.credits }}</li>
+        <li>{{ market.user }}</li>
     {% endfor %}
     </ul>
-
 
 {% endblock content %}

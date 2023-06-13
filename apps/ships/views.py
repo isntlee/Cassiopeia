@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from apps.markets.models import Good
 from .models import Ship, Cargo, CargoLoad
-from testing.views import get_request,post_request
+from testing.views import get_request, post_request
 from apps.navigation.views import find_destinations
 
 
@@ -210,5 +210,11 @@ def create_ship_or_cargo(request):
             return response
         
     return render(request, 'ships/testing.html')
+
+
+class ShipListView(ListView):
+    model = Ship
+    fields = []
+    template_name = 'ships/testing.html'
 
 

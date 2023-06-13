@@ -109,3 +109,9 @@ class TradeGoodUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('about')
+
+
+class MarketListView(ListView):
+    model = Market
+    fields = []
+    template_name = 'markets/testing.html'

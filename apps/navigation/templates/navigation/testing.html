@@ -5,9 +5,21 @@
 {% block content %}
 <h2>Navigation</h2>
 
-<form method="post">
+<form method="post" action="{% url 'navigation:waypoint_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Create</button>
+</form>
+
+<h2>Navigation objects</h2>
+    <ul>
+    {% for navigation in object_list %}
+        <li>{{ navigation.symbol }}</li>
+        <li>{{ navigation.hq }}</li>
+        <li>{{ navigation.faction }}</li>
+        <li>{{ navigation.credits }}</li>
+        <li>{{ navigation.user }}</li>
+    {% endfor %}
+    </ul>
 
 {% endblock content %}

@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView
+from django.views.generic import CreateView, ListView
 from .models import  Waypoint, Trait
 from testing.views import get_request
 
@@ -54,3 +54,8 @@ def find_destinations(system, waypoint_type):
                 destinations = [].append(waypoint)
                 return destinations
             
+
+class WaypointListView(ListView):
+    model = Waypoint
+    fields = []
+    template_name = 'navigation/testing.html'
