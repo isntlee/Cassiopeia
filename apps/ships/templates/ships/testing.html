@@ -11,16 +11,19 @@
     <button type="submit" name="create_cargo" value="create_cargo">Cargo</button>
     <button type="submit" name="navigate_ship" value="navigate_ship">Navigate</button>
 </form>
+<br>
 
 
 <h2>Ship objects</h2>
     <ul>
     {% for ship in object_list %}
-        <li>{{ ship.symbol }}</li>
-        <li>{{ ship.hq }}</li>
-        <li>{{ ship.faction }}</li>
-        <li>{{ ship.credits }}</li>
-        <li>{{ ship.user }}</li>
+        <li>{{ ship.ship_name }}</li>
+        <li>{{ ship.role }}</li>
+        <li>{{ ship.location_current }}</li>
+        <li>{{ ship.location_current_type }}</li>
+        <li>{{ ship.ship_status }}</li>
+        <li>{{ ship.fuel_percentage }}</li>
+        <br>
     {% endfor %}
     </ul>
 

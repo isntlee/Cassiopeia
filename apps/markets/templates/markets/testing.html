@@ -10,16 +10,13 @@
     {{ form.as_p }}
     <button type="submit">Create</button>
 </form>
-
+<br>
 
 <h2>Market objects</h2>
     <ul>
     {% for market in object_list %}
         <li>{{ market.symbol }}</li>
-        <li>{{ market.hq }}</li>
-        <li>{{ market.faction }}</li>
-        <li>{{ market.credits }}</li>
-        <li>{{ market.user }}</li>
+        <br>
     {% endfor %}
     </ul>
 

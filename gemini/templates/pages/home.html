@@ -2,25 +2,15 @@
 {% block content %}
 
 
-<form action="{% url 'agents:agent_list' %}" style="display: inline-block;">
-    <button type="submit"value="agents">Agents</button>
-</form>
+<a href="{% url 'agents:agent_list' %}" class="btn btn-outline-dark">Agents</a>
 
-<form action="{% url 'extractions:extraction_list' %}" style="display: inline-block;">
-    <button type="submit" value="extractions">Extractions</button>
-</form>
+<a href="{% url 'extractions:extraction_list' %}" class="btn btn-outline-dark">Extractions</a>
 
-<form action="{% url 'markets:market_list' %}" style="display: inline-block;">
-    <button type="submit" value="markets">Markets</button>
-</form>
+<a href="{% url 'markets:market_list' %}" class="btn btn-outline-dark">Markets</a>
 
-<form action="{% url 'navigation:waypoint_list' %}" style="display: inline-block;">
-    <button type="submit" value="navigation">Navigation</button>
-</form>
+<a href="{% url 'navigation:waypoint_list' %}" class="btn btn-outline-dark">Navigation</a>
 
-<form action="{% url 'ships:ship_list' %}" style="display: inline-block;">
-    <button type="submit" value="ships">Ships</button>
-</form>
+<a href="{% url 'ships:ship_list' %}" class="btn btn-outline-dark">Ships</a>
 
 
 {% endblock content %}

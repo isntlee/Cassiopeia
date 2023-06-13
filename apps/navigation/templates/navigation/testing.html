@@ -10,15 +10,15 @@
     {{ form.as_p }}
     <button type="submit">Create</button>
 </form>
+<br>
 
 <h2>Navigation objects</h2>
     <ul>
-    {% for navigation in object_list %}
-        <li>{{ navigation.symbol }}</li>
-        <li>{{ navigation.hq }}</li>
-        <li>{{ navigation.faction }}</li>
-        <li>{{ navigation.credits }}</li>
-        <li>{{ navigation.user }}</li>
+    {% for waypoint in waypoint_list %}
+        <li>{{ waypoint.symbol }}</li>
+        <li>{{ waypoint.type  }}</li>
+        <li>{{ waypoint.coords_long}},{{ waypoint.coords_lat}}</li>
+        <br>
     {% endfor %}
     </ul>
 
