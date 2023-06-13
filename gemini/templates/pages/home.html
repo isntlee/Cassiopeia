@@ -2,15 +2,16 @@
 {% block content %}
 
 
-<form action="{% url 'agents:root' %}" style="display: inline-block;">
-    <button type="submit" name="agents_root" value="agents_root">Agents</button>
+
+<form action="{% url 'agents:agent_create' %}" style="display: inline-block;">
+    <button type="submit"value="agents">Agents</button>
 </form>
 
 <form action="{% url 'extractions:testing' %}" style="display: inline-block;">
     <button type="submit" name="extractions_root" value="extractions_root">Extractions</button>
 </form>
 
-<form action="{% url 'markets:testing' %}" style="display: inline-block;">
+<form action="{% url 'markets:market_create' %}" style="display: inline-block;">
     <button type="submit" name="markets_root" value="markets_root">Markets</button>
 </form>
 
@@ -19,7 +20,7 @@
 </form>
 
 <form action="{% url 'ships:create_ship_or_cargo' %}" style="display: inline-block;">
-    <button type="submit" name="ships_root" value="shipss_root">Ships</button>
+    <button type="submit" name="ships_root" value="ships_root">Ships</button>
 </form>
 
 

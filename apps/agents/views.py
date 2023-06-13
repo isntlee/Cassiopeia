@@ -1,6 +1,6 @@
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from .models import Agent
 from testing.views import get_request, post_request
 
@@ -65,3 +65,9 @@ class AgentUpdateView(UpdateView):
 
     def get_success_url(self):
         return 
+
+
+class AgentListView(ListView):
+    model = Agent
+    fields = []
+    template_name = 'agents/testing.html'

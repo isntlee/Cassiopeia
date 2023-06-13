@@ -10,4 +10,13 @@
     {{ form.as_p }}
     <button type="submit">Create</button>
 
+
+<h2>Market objects</h2>
+    <ul>
+    {% for market in object_list %}
+        <li>{{ market.symbol }}</li>
+    {% endfor %}
+    </ul>
+
+
 {% endblock content %}

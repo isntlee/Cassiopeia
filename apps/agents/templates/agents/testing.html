@@ -5,9 +5,22 @@
 {% block content %}
 <h2>Agents</h2>
 
-<form method="post">
+<form method="post" action="{% url 'agents:agent_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Create</button>
+</form>
+
+
+<h2>Agent objects</h2>
+    <ul>
+    {% for agent in object_list %}
+        <li>{{ agent.symbol }}</li>
+        <li>{{ agent.hq }}</li>
+        <li>{{ agent.faction }}</li>
+        <li>{{ agent.credits }}</li>
+        <li>{{ agent.user }}</li>
+    {% endfor %}
+    </ul>
 
 {% endblock content %}

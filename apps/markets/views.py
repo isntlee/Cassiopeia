@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from .models import  Market, TradeGood, Good
 from testing.views import get_request
 
@@ -48,6 +48,11 @@ class MarketCreateView(CreateView):
         
     def get_success_url(self):
         return reverse_lazy('about')
+    
+
+class MarketListView(ListView):
+    model = Market
+    template_name = 'markets/testing.html'
     
     
 class GoodCreateView(CreateView):
