@@ -18,7 +18,7 @@ class MarketCreateView(CreateView):
         info = get_request(url, agent_token)
 
         try:
-            data = info.get('data', [])
+            data = info.get('data', KeyError)
             print('\n\n Data: ', data, '\n\n')
             market_name = data['symbol']
             market_obj = Market.objects.filter(symbol=market_name).first()
@@ -52,7 +52,7 @@ class MarketCreateView(CreateView):
            return call_messages(self.request, info)
         
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
     
 
 class MarketListView(ListView):
@@ -70,7 +70,7 @@ class GoodCreateView(CreateView):
         good_obj.save()
 
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
     
 
 class TradeGoodsCreateView(CreateView):
@@ -98,7 +98,7 @@ class TradeGoodsCreateView(CreateView):
             tradegood_obj.save()
 
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
     
 
 class TradeGoodUpdateView(UpdateView):
@@ -113,7 +113,7 @@ class TradeGoodUpdateView(UpdateView):
                                             good=good_obj, market=market_obj, tradegood_name=tradegood_name)
 
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
 
 
 class MarketListView(ListView):

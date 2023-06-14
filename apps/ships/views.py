@@ -101,7 +101,7 @@ class ShipCreateView(CreateView):
            return call_messages(self.request, info)
         
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
     
 
 class ShipUpdateView(UpdateView):
@@ -113,7 +113,7 @@ class ShipUpdateView(UpdateView):
         Ship.objects.filter(pk=ship_pk).update(**data_current)
 
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
     
 
 class CargoCreateView(CreateView):
@@ -182,7 +182,7 @@ class CargoCreateView(CreateView):
                 )
     
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
         
     template_name = 'navigation/testing.html'
 

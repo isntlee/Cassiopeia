@@ -51,8 +51,9 @@ def call_messages(request, info):
     if 'error' in info:
         error_message = f"{info['error']['message']} (code: {info['error']['code']})"
         messages.add_message(request, messages.ERROR, error_message)
-    else:
-        messages.add_message(request, messages.ERROR, 'Keep digging there')
+    elif 'updated' in info['data']['status']:
+        update_message = f"{info['data']['symbol']} updated"
+        messages.add_message(request, messages.WARNING, update_message)
 
     return redirect(request.path)
 

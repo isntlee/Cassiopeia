@@ -23,7 +23,7 @@ class ExtractionCreateView(CreateView):
         info = post_request(url, payload, exp_status, agent_token)
 
         try:
-            data = info.get('data', [])
+            data = info.get('data', KeyError)
             extraction = data['extraction']
 
             ship = extraction['shipSymbol']
@@ -47,7 +47,7 @@ class ExtractionCreateView(CreateView):
 
     def get_success_url(self):
         # redirect to a success page after data is saved
-        return reverse_lazy('about')
+        return reverse_lazy('home')
 
     template_name = 'extractions/testing.html'
 

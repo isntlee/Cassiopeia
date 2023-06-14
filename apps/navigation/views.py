@@ -17,14 +17,14 @@ class WaypointCreateView(CreateView):
         info = get_request(url, agent_token)
 
         try:
-            data = info.get('data', [])
+            data = info.get('data', KeyError)
             for waypoint in data:
                 waypoint_name = waypoint['symbol']
                 waypoint_obj = Waypoint.objects.filter(symbol=waypoint_name).first()
-
-                if waypoint_obj:
+                
+                if waypoint_obj: 
                     continue
-                else: 
+                else:  
                     new_waypoint = Waypoint.objects.create(
                                         symbol = waypoint_name,
                                         systemSymbol = waypoint['systemSymbol'],
@@ -32,7 +32,7 @@ class WaypointCreateView(CreateView):
                                         coords_long = waypoint['x'],
                                         coords_lat = waypoint['y'],
                                         faction = waypoint['faction']['symbol']
-                                )  
+                                )
 
                 for trait in waypoint['traits']:
                     trait_symbol = trait['symbol']
@@ -42,11 +42,11 @@ class WaypointCreateView(CreateView):
             return super().form_valid(form)
         
         except Exception:
-           return call_messages(self.request, info)
+            return call_messages(self.request, info)
         
         
     def get_success_url(self):
-        return reverse_lazy('about')
+        return reverse_lazy('home')
     
     template_name = 'navigation/testing.html'
 
