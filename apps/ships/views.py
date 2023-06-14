@@ -4,8 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
 from apps.markets.models import Good
 from .models import Ship, Cargo, CargoLoad
-from testing.views import get_request, post_request
-from apps.navigation.views import find_destinations
+from testing.views import get_request, call_messages
 
 
 def current_ship_data(data):
@@ -71,30 +70,35 @@ class ShipCreateView(CreateView):
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}"
 
         agent_token =  self.request.user.agents.first().agent_token
-        info  = get_request(url, agent_token)
-        data = info.get('data', [])
-        data_current = current_ship_data(data)
+        info = get_request(url, agent_token)
+        try: 
+
+            data = info.get('data', [])
+            data_current = current_ship_data(data)
+            
+            ship_name = data['symbol']
+            faction = data['registration']['factionSymbol']
+            role = data['registration']['role']
+    
+            prev_obj = Ship.objects.filter(ship_name=ship_name).first()
+
+            if prev_obj:
+                ShipUpdateView.update_ship(self, prev_obj.pk, data_current)
+                return redirect('about')
+
+            else:
+                ship_obj = Ship.objects.create(   
+                    **data_current,
+                    ship_name=ship_name,
+                    faction=faction,
+                    role=role
+                )        
+                ship_obj.save()
+
+                return super().form_valid(form)
         
-        ship_name = data['symbol']
-        faction = data['registration']['factionSymbol']
-        role = data['registration']['role']
- 
-        prev_obj = Ship.objects.filter(ship_name=ship_name).first()
-
-        if prev_obj:
-            ShipUpdateView.update_ship(self, prev_obj.pk, data_current)
-            return redirect('about')
-
-        else:
-            ship_obj = Ship.objects.create(   
-                **data_current,
-                ship_name=ship_name,
-                faction=faction,
-                role=role
-            )        
-            ship_obj.save()
-
-            return super().form_valid(form)
+        except Exception:
+           return call_messages(self.request, info)
         
     def get_success_url(self):
         return reverse_lazy('about')
@@ -119,39 +123,43 @@ class CargoCreateView(CreateView):
     def form_valid(self, form):
         shipSymbol = 'MEDLOCK-1' 
         url = f"https://api.spacetraders.io/v2/my/ships/{shipSymbol}/cargo"
-        info  = get_request(url)
+        agent_token = self.request.user.agents.first().agent_token
+        info = get_request(url, agent_token)
+        try:
+            data = info.get('data', [])
+            cargo_capacity = data['capacity']
+            units_held = data['units']
+            cargo_fill = units_held/cargo_capacity
+            
+            if cargo_fill == 1.00:
+                full_cargo = True
+            else: 
+                full_cargo = False
 
-        data = info.get('data', [])
-        cargo_capacity = data['capacity']
-        units_held = data['units']
-        cargo_fill = units_held/cargo_capacity
-        
-        if cargo_fill == 1.00:
-            full_cargo = True
-        else: 
-            full_cargo = False
+            cargo_name = f"{shipSymbol}-cargo"
+            cargo_load_list = data['inventory']
+            ship_obj = Ship.objects.filter(ship_name=shipSymbol).first()
+            cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()   
 
-        cargo_name = f"{shipSymbol}-cargo"
-        cargo_load_list = data['inventory']
-        ship_obj = Ship.objects.filter(ship_name=shipSymbol).first()
-        cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()   
-
-        if cargo_obj:
-            self.create_or_update_cargoload(cargo_load_list, cargo_obj)
-            CargoUpdateView.update_cargo(self, cargo_obj.id, cargo_capacity, units_held, cargo_fill, full_cargo)
-            return redirect('about')
+            if cargo_obj:
+                self.create_or_update_cargoload(cargo_load_list, cargo_obj)
+                CargoUpdateView.update_cargo(self, cargo_obj.id, cargo_capacity, units_held, cargo_fill, full_cargo)
+                return redirect('about')
+            
+            else:
+                cargo_obj = Cargo.objects.create(
+                    cargo_name = cargo_name,
+                    cargo_capacity=cargo_capacity,
+                    units_held=units_held,
+                    cargo_fill = cargo_fill, 
+                    full_cargo=full_cargo, 
+                    ship=ship_obj,
+            )      
+            
+            return super().form_valid(form)
         
-        else:
-            cargo_obj = Cargo.objects.create(
-                cargo_name = cargo_name,
-                cargo_capacity=cargo_capacity,
-                units_held=units_held,
-                cargo_fill = cargo_fill, 
-                full_cargo=full_cargo, 
-                ship=ship_obj,
-        )      
-        
-        return super().form_valid(form)
+        except Exception:
+           return call_messages(self.request, info)
          
     def create_or_update_cargoload(self, cargo_load_list, cargo_obj):
         for cargo_load in cargo_load_list:

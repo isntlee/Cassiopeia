@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
 from .models import  Market, TradeGood, Good
-from testing.views import get_request
+from testing.views import get_request, call_messages
 
 
 class MarketCreateView(CreateView):
@@ -14,37 +14,42 @@ class MarketCreateView(CreateView):
         home_system = 'X1-HQ18'
         waypoint = 'X1-HQ18-98695F' 
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
-        info  = get_request(url)
+        agent_token = self.request.user.agents.first().agent_token
+        info = get_request(url, agent_token)
 
-        data = info.get('data', [])
-        print('\n\n Data: ', data, '\n\n')
-        market_name = data['symbol']
-        market_obj = Market.objects.filter(symbol=market_name).first()
+        try:
+            data = info.get('data', [])
+            print('\n\n Data: ', data, '\n\n')
+            market_name = data['symbol']
+            market_obj = Market.objects.filter(symbol=market_name).first()
 
-        if not market_obj:
-            market_obj = Market.objects.create(symbol=market_name)   
-            
-        for goods in data['exchange']:
-            symbol = goods['symbol']
-            name = goods['name']
-            description = goods['description']
-            good_obj = Good.objects.filter(symbol=symbol).first()
+            if not market_obj:
+                market_obj = Market.objects.create(symbol=market_name)   
+                
+            for goods in data['exchange']:
+                symbol = goods['symbol']
+                name = goods['name']
+                description = goods['description']
+                good_obj = Good.objects.filter(symbol=symbol).first()
 
-            if not good_obj:
-                GoodCreateView.create_good(self, symbol, name, description)
+                if not good_obj:
+                    GoodCreateView.create_good(self, symbol, name, description)
 
-        for tradegoods in data['tradeGoods']:
-            symbol = tradegoods['symbol']
-            trade_volume = tradegoods['tradeVolume']
-            supply = tradegoods['supply']
-            purchase_price = tradegoods['purchasePrice']
-            sell_price = tradegoods['sellPrice']
-            good_obj = Good.objects.get(symbol__exact=symbol)
-            tradegood_name = f"{market_obj}:{symbol}"
-            TradeGoodsCreateView.create_tradegood(self, symbol, trade_volume, supply,
-                                    purchase_price, sell_price, good_obj, market_obj, tradegood_name)
+            for tradegoods in data['tradeGoods']:
+                symbol = tradegoods['symbol']
+                trade_volume = tradegoods['tradeVolume']
+                supply = tradegoods['supply']
+                purchase_price = tradegoods['purchasePrice']
+                sell_price = tradegoods['sellPrice']
+                good_obj = Good.objects.get(symbol__exact=symbol)
+                tradegood_name = f"{market_obj}:{symbol}"
+                TradeGoodsCreateView.create_tradegood(self, symbol, trade_volume, supply,
+                                        purchase_price, sell_price, good_obj, market_obj, tradegood_name)
 
-        return super().form_valid(form)
+            return super().form_valid(form)
+        
+        except Exception:
+           return call_messages(self.request, info)
         
     def get_success_url(self):
         return reverse_lazy('about')

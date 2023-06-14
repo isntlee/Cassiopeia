@@ -7,6 +7,8 @@ from requests.exceptions import HTTPError
 
 from django.shortcuts import render
 from environ import Env; env = Env()
+from django.contrib import messages
+from django.shortcuts import redirect
 
 
 def start_up():
@@ -14,9 +16,9 @@ def start_up():
     list_own_ships()
 
 
-def get_request(url, user_token):
+def get_request(url, agent_token):
     headers = {"Accept": "application/json",
-                "Authorization": f"Bearer {user_token}"
+                "Authorization": f"Bearer {agent_token}"
     }
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
@@ -25,10 +27,10 @@ def get_request(url, user_token):
     return response.json()
 
 
-def post_request(url, payload, exp_status):
+def post_request(url, payload, exp_status, agent_token):
     headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
-                "Authorization": env("BEARER") if exp_status != 'register' else None
+                "Authorization": f"Bearer {agent_token}" if exp_status != 'register' else None
     }
     response = requests.post(url, json=payload, headers=headers)
     # if response.status_code != exp_status:
@@ -43,6 +45,16 @@ def get_error(response):
     error_message = formatted_error["error"]["message"]
     print("\n", error_message, sep="")
     return error_message
+
+
+def call_messages(request, info):
+    if 'error' in info:
+        error_message = f"{info['error']['message']} (code: {info['error']['code']})"
+        messages.add_message(request, messages.ERROR, error_message)
+    else:
+        messages.add_message(request, messages.ERROR, 'Keep digging there')
+
+    return redirect(request.path)
 
 
 def percentage_format(name, index):

@@ -19,7 +19,8 @@ class AgentCreateView(CreateView):
                 "symbol": "TESTING115",
                 "email": "testing@testing.com"
             }
-            info  = post_request(url, payload, exp_status)
+            agent_token = self.request.user.agents.first().agent_token
+            info = post_request(url, payload, exp_status, agent_token)
             data = info['data']
             agent_data = data['agent']
 
@@ -27,7 +28,7 @@ class AgentCreateView(CreateView):
             url = f"https://api.spacetraders.io/v2/my/agent"
             agent_choice = 0
             user_token = Agent.objects.all()[agent_choice].agent_token
-            info  = get_request(url, user_token)
+            info = get_request(url, user_token)
             agent_data = info['data']
    
         agent_obj = Agent.objects.filter(symbol=agent_data['symbol']).first()

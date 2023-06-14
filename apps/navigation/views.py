@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 from .models import  Waypoint, Trait
-from testing.views import get_request
+from testing.views import get_request, call_messages
 
 
 class WaypointCreateView(CreateView):
@@ -13,31 +13,37 @@ class WaypointCreateView(CreateView):
         home_system = 'X1-HQ18'
         location  = 'X1-HQ18-57781A' 
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-        info  = get_request(url)
+        agent_token = self.request.user.agents.first().agent_token
+        info = get_request(url, agent_token)
 
-        data = info.get('data', [])
-        for waypoint in data:
-            waypoint_name = waypoint['symbol']
-            waypoint_obj = Waypoint.objects.filter(symbol=waypoint_name).first()
+        try:
+            data = info.get('data', [])
+            for waypoint in data:
+                waypoint_name = waypoint['symbol']
+                waypoint_obj = Waypoint.objects.filter(symbol=waypoint_name).first()
 
-            if waypoint_obj:
-                continue
-            else: 
-                new_waypoint = Waypoint.objects.create(
-                                    symbol = waypoint_name,
-                                    systemSymbol = waypoint['systemSymbol'],
-                                    type = waypoint['type'],
-                                    coords_long = waypoint['x'],
-                                    coords_lat = waypoint['y'],
-                                    faction = waypoint['faction']['symbol']
-                            )  
+                if waypoint_obj:
+                    continue
+                else: 
+                    new_waypoint = Waypoint.objects.create(
+                                        symbol = waypoint_name,
+                                        systemSymbol = waypoint['systemSymbol'],
+                                        type = waypoint['type'],
+                                        coords_long = waypoint['x'],
+                                        coords_lat = waypoint['y'],
+                                        faction = waypoint['faction']['symbol']
+                                )  
 
-            for trait in waypoint['traits']:
-                trait_symbol = trait['symbol']
-                trait_obj, created  = Trait.objects.get_or_create(symbol=trait_symbol)
-                new_waypoint.traits.add(trait_obj) 
+                for trait in waypoint['traits']:
+                    trait_symbol = trait['symbol']
+                    trait_obj, created  = Trait.objects.get_or_create(symbol=trait_symbol)
+                    new_waypoint.traits.add(trait_obj) 
 
-        return super().form_valid(form)
+            return super().form_valid(form)
+        
+        except Exception:
+           return call_messages(self.request, info)
+        
         
     def get_success_url(self):
         return reverse_lazy('about')

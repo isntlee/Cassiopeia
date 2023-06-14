@@ -5,7 +5,7 @@ class Extraction(models.Model):
     extracted = models.CharField(max_length=60)
     units = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    cooldown = models.IntegerField(null=True, blank=True)
+    cooldown_from = models.DateTimeField(null=True, blank=True)
     extraction_name = models.CharField(max_length=200)
 
     def save(self, *args, **kwargs):
