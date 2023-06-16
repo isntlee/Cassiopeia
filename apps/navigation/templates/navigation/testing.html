@@ -5,12 +5,19 @@
 {% block content %}
 <h2>Navigation</h2>
 
+
 <form method="post" action="{% url 'navigation:waypoint_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Create</button>
+    <button type="submit" name="action" value="create">Create</button>
 </form>
-<button type="submit" name="navigate_ship" value="navigate_ship">Navigate</button>
+
+<form method="post" action="{% url 'navigation:navigate' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="action" value="navigate">Navigate</button>
+    <input type="text" name="user_input">
+</form>
 <br>
 
 <h2>Navigation objects</h2>
@@ -19,6 +26,13 @@
         <li>{{ waypoint.symbol }}</li>
         <li>{{ waypoint.type  }}</li>
         <li>{{ waypoint.coords_long}},{{ waypoint.coords_lat}}</li>
+        <ul>
+            {% for trait in waypoint.traits.all %}
+                {% if trait.symbol == 'SHIPYARD' or trait.symbol == 'MARKETPLACE' or trait.symbol == 'MINERAL_DEPOSITS' %}
+                <li>{{ trait.symbol }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
         <br>
     {% endfor %}
     </ul>
