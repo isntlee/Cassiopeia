@@ -122,9 +122,10 @@ class CargoCreateView(CreateView):
     fields = []
     
     def form_valid(self, form):
-        shipSymbol = 'MEDLOCK-1' 
-        url = f"https://api.spacetraders.io/v2/my/ships/{shipSymbol}/cargo"
-        agent_token = self.request.user.agent.first().agent_token
+        agent = self.request.user.agent
+        current_ship = agent.current_ship
+        url = f"https://api.spacetraders.io/v2/my/ships/{current_ship}/cargo"
+        agent_token = self.request.user.agent.agent_token
         info = get_request(url, agent_token)
         try:
             data = info.get('data', [])
@@ -137,9 +138,9 @@ class CargoCreateView(CreateView):
             else: 
                 full_cargo = False
 
-            cargo_name = f"{shipSymbol}-cargo"
+            cargo_name = f"{current_ship}-cargo"
             cargo_load_list = data['inventory']
-            ship_obj = Ship.objects.filter(ship_name=shipSymbol).first()
+            ship_obj = Ship.objects.filter(ship_name=current_ship).first()
             cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()   
 
             if cargo_obj:

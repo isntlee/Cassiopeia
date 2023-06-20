@@ -9,7 +9,6 @@
     {% csrf_token %}
     <button type="submit" name="create_ship" value="create_ship">Ship</button>
     <button type="submit" name="create_cargo" value="create_cargo">Cargo</button>
-    <button type="submit" name="navigate_ship" value="navigate_ship">Navigate</button>
 </form>
 <br>
 
@@ -23,8 +22,15 @@
         <li>{{ ship.location_current_type }}</li>
         <li>{{ ship.ship_status }}</li>
         <li>{{ ship.fuel_percentage }}</li>
+        <ul>
+            {% for cargoload in ship.cargo.all %}
+                <li>{{ cargoload.symbol }}</li>
+            {% endfor %}
+        </ul>
         <br>
     {% endfor %}
     </ul>
+
+    
 
 {% endblock content %}
