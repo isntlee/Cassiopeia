@@ -14,7 +14,7 @@ class WaypointCreateView(CreateView):
         home_system = 'X1-HQ18'
         location  = 'X1-HQ18-57781A' 
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-        agent_token = self.request.user.agents.first().agent_token
+        agent_token = self.request.user.agent.first().agent_token
         info = get_request(url, agent_token)
         print('\n\n info: ', info, '\n\n')
 
@@ -69,7 +69,7 @@ class NavigateView(FormView):
     success_url = reverse_lazy('home')
 
     def form_valid(self, form): 
-        agent_token =  self.request.user.agents.first().agent_token
+        agent_token =  self.request.user.agent.first().agent_token
         ship_symbol = 'TESTING115-1'
         exp_status = 200
 

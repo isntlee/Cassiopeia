@@ -19,7 +19,7 @@ class ExtractionCreateView(CreateView):
         ################## AND: all the initial error chacking ######################
         exp_status = 201
 
-        agent_token = self.request.user.agents.first().agent_token
+        agent_token = self.request.user.agent.first().agent_token
         info = post_request(url, payload, exp_status, agent_token)
 
         try:

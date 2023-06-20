@@ -14,7 +14,7 @@ class MarketCreateView(CreateView):
         home_system = 'X1-HQ18'
         waypoint = 'X1-HQ18-98695F' 
         url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints/{waypoint}/market"
-        agent_token = self.request.user.agents.first().agent_token
+        agent_token = self.request.user.agent.first().agent_token
         info = get_request(url, agent_token)
 
         try:

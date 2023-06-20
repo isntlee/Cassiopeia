@@ -48,12 +48,19 @@ def get_error(response):
 
 
 def call_messages(request, info):
-    if 'error' in info:
-        error_message = f"{info['error']['message']} (code: {info['error']['code']})"
-        messages.add_message(request, messages.ERROR, error_message)
-    elif 'updated' in info['data']['status']:
-        update_message = f"{info['data']['symbol']} updated"
-        messages.add_message(request, messages.WARNING, update_message)
+    try:
+        if 'error' in info:
+            error_message = f"{info['error']['message']} (code: {info['error']['code']})"
+            messages.add_message(request, messages.ERROR, error_message)
+    except KeyError as e:
+        print(f"Error: {e}")
+
+    try:
+        if 'updated' in info['data']['status']:
+            update_message = f"{info['data']['symbol']} updated"
+            messages.add_message(request, messages.WARNING, update_message)
+    except KeyError as e:
+        print(f"Error: {e}")
 
     return redirect(request.path)
 

@@ -69,7 +69,7 @@ class ShipCreateView(CreateView):
         ship_symbol = 'TESTING115-1'
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}"
 
-        agent_token =  self.request.user.agents.first().agent_token
+        agent_token =  self.request.user.agent.first().agent_token
         info = get_request(url, agent_token)
         try: 
 
@@ -123,7 +123,7 @@ class CargoCreateView(CreateView):
     def form_valid(self, form):
         shipSymbol = 'MEDLOCK-1' 
         url = f"https://api.spacetraders.io/v2/my/ships/{shipSymbol}/cargo"
-        agent_token = self.request.user.agents.first().agent_token
+        agent_token = self.request.user.agent.first().agent_token
         info = get_request(url, agent_token)
         try:
             data = info.get('data', [])
