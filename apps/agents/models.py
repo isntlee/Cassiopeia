@@ -7,6 +7,7 @@ class Agent(models.Model):
     accountId = models.CharField(max_length=60)
     hq = models.CharField(max_length=60)
     faction = models.CharField(max_length=60)
+    current_ship = models.CharField(max_length=60, null=True, blank=True)
     credits = models.IntegerField(null=True, blank=True)
     agent_token = models.CharField(max_length=1000)
     user = models.OneToOneField(User, related_name='agent', on_delete=models.CASCADE)

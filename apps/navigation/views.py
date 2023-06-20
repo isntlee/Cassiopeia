@@ -3,6 +3,7 @@ from django import forms
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, FormView
 from .models import  Waypoint, Trait
+from apps.ships.models import Ship
 from testing.views import get_request, post_request, call_messages
 
 
@@ -11,10 +12,11 @@ class WaypointCreateView(CreateView):
     fields = []
     
     def form_valid(self, form):
-        home_system = 'X1-HQ18'
-        location  = 'X1-HQ18-57781A' 
-        url = f"https://api.spacetraders.io/v2/systems/{home_system}/waypoints"
-        agent_token = self.request.user.agent.first().agent_token
+        agent = self.request.user.agent
+        ship_obj = Ship.objects.filter(ship_name=agent.current_ship).first()
+        location = ship_obj.location_current[:7] 
+        url = f"https://api.spacetraders.io/v2/systems/{location}/waypoints"
+        agent_token = agent.agent_token
         info = get_request(url, agent_token)
         print('\n\n info: ', info, '\n\n')
 
@@ -69,8 +71,8 @@ class NavigateView(FormView):
     success_url = reverse_lazy('home')
 
     def form_valid(self, form): 
-        agent_token =  self.request.user.agent.first().agent_token
-        ship_symbol = 'TESTING115-1'
+        agent_token =  self.request.user.agent.agent_token
+        ship_symbol = self.request.user.agent.current_ship
         exp_status = 200
 
         orbit_url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/orbit"

@@ -11,7 +11,7 @@ class ExtractionCreateView(CreateView):
     fields = []
     def form_valid(self, form):
         # get the request URL data
-        ship_symbol = 'TESTING115-1'
+        ship_symbol = self.request.user.agent.current_ship
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/extract"
         payload = {}
 
@@ -19,7 +19,7 @@ class ExtractionCreateView(CreateView):
         ################## AND: all the initial error chacking ######################
         exp_status = 201
 
-        agent_token = self.request.user.agent.first().agent_token
+        agent_token = self.request.user.agent.agent_token
         info = post_request(url, payload, exp_status, agent_token)
 
         try:

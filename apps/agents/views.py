@@ -2,7 +2,9 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, UpdateView, ListView
 from .models import Agent
+from apps.ships.views import ShipCreateView
 from testing.views import get_request, post_request, call_messages
+
 
 class AgentCreateView(CreateView):
     model = Agent
@@ -29,7 +31,7 @@ class AgentCreateView(CreateView):
     def create_agent(self):
         url = "https://api.spacetraders.io/v2/register"
         exp_status = 'register'
-        symbol = "AdminControl"
+        symbol = "Gentry"
         agent_token = None
         payload = {
             "faction": "COSMIC",
@@ -45,10 +47,12 @@ class AgentCreateView(CreateView):
                 accountId=data['agent']['accountId'],
                 hq=data['agent']['headquarters'],
                 faction=data['agent']['startingFaction'],
+                current_ship=data['ship']['symbol'],
                 credits=data['agent']['credits'],
                 agent_token=data['token'],
                 user=self.request.user,
             )
+            ShipCreateView.as_view()
         except Exception:
             call_messages(self.request, info)
 

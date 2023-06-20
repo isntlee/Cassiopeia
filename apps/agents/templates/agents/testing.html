@@ -12,14 +12,14 @@
 </form>
 <br>
 
-<h2>Agent object</h2>
+<h2>Agent objects</h2>
     <ul>
     {% for agent in object_list %}
         <li>{{ agent.symbol }}</li>
         <li>{{ agent.hq }}</li>
         <li>{{ agent.faction }}</li>
         <li>{{ agent.credits }}</li>
-        <li>{{ agent.user }}</li>
+        <li>{{ agent.current_ship }}</li>
         <br>
     {% endfor %}
     </ul>

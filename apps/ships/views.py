@@ -66,10 +66,11 @@ class ShipCreateView(CreateView):
     template_name = 'ships/testing.html'
     
     def form_valid(self, form):
-        ship_symbol = 'TESTING115-1'
+        agent = self.request.user.agent
+        ship_symbol = agent.current_ship
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}"
 
-        agent_token =  self.request.user.agent.first().agent_token
+        agent_token =  agent.agent_token
         info = get_request(url, agent_token)
         try: 
 
