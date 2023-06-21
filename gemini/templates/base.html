@@ -49,9 +49,6 @@
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">About</a>
-              </li>
               {% if request.user.is_authenticated %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'users:detail' request.user.username %}">{% translate "My Profile" %}</a>
@@ -72,6 +69,21 @@
                   <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
                 </li>
               {% endif %}
+              <li class="nav-item">
+                <a href="{% url 'agents:agent_list' %}" class="btn btn-outline-dark">Agents</a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'extractions:extraction_list' %}" class="btn btn-outline-dark">Extractions</a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'markets:market_list' %}" class="btn btn-outline-dark">Markets</a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'navigation:waypoint_list' %}" class="btn btn-outline-dark">Navigation</a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'ships:ship_list' %}" class="btn btn-outline-dark">Ships</a>
+              </li>
             </ul>
           </div>
         </div>

@@ -5,7 +5,6 @@
 {% block content %}
 <h2>Navigation</h2>
 
-
 <form method="post" action="{% url 'navigation:waypoint_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
@@ -18,23 +17,38 @@
     <button type="submit" name="action" value="navigate">Navigate</button>
     <input type="text" name="user_input">
 </form>
+
+<form method="post" action="{% url 'navigation:dock' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="action" value="dock">Dock</button>
+</form>
 <br>
 
+
 <h2>Navigation objects</h2>
-    <ul>
-    {% for waypoint in waypoint_list %}
-        <li>{{ waypoint.symbol }}</li>
-        <li>{{ waypoint.type  }}</li>
-        <li>{{ waypoint.coords_long}},{{ waypoint.coords_lat}}</li>
+<ul>
+    <h4>Current location/status</h4>
+    {% for ship_data in object_list.ships %}
+        <li>{{ ship_data.location_current}} : {{ ship_data.location_current_type}}</li>
+        <li>{{ ship_data.ship_status}}</li>
+    {% endfor %}
+    <br>
+
+    <h4>Destinations</h4>
+    {% for waypoint_data in object_list.waypoints %}
+        <li>{{ waypoint_data.symbol }}</li>
+        <li>{{ waypoint_data.type }}</li>
+        <li>{{ waypoint_data.coords_long}},{{ waypoint_data.coords_lat}}</li>
         <ul>
-            {% for trait in waypoint.traits.all %}
+            {% for trait in waypoint_data.traits.all %}
                 {% if trait.symbol == 'SHIPYARD' or trait.symbol == 'MARKETPLACE' or trait.symbol == 'MINERAL_DEPOSITS' %}
                 <li>{{ trait.symbol }}</li>
                 {% endif %}
             {% endfor %}
         </ul>
-        <br>
+        <br>  
     {% endfor %}
-    </ul>
-
+    <br>
+</ul>
 {% endblock content %}

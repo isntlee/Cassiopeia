@@ -43,7 +43,7 @@ class ExtractionCreateView(CreateView):
             return call_messages(self.request, info)
 
     def get_success_url(self):
-        return reverse_lazy('home')
+        return reverse_lazy('extractions:extraction_list')
 
     template_name = 'extractions/testing.html'
 

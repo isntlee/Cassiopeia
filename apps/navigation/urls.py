@@ -6,5 +6,6 @@ app_name = 'navigation'
 urlpatterns = [
     path("", views.WaypointListView.as_view(), name="waypoint_list"), 
     path("create/", views.WaypointCreateView.as_view(), name="waypoint_create"),
-    path("navigate/", views.NavigateView.as_view(), name="navigate")
+    path("navigate/", views.NavigateView.as_view(), name="navigate"),
+    path("dock/", views.DockView.as_view(), name="dock")
 ]

@@ -57,7 +57,7 @@ class AgentCreateView(CreateView):
             call_messages(self.request, info)
 
     def get_success_url(self):
-        return reverse_lazy('home')
+        return reverse_lazy('agents:agent_list')
 
     
 

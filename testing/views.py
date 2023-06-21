@@ -24,6 +24,7 @@ def get_request(url, agent_token):
     if response.status_code != 200:
         get_error(response)
     
+    # print('\n\n 0002:', response.json(), '\n\n')
     return response.json()
 
 
