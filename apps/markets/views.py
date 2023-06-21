@@ -19,7 +19,6 @@ class MarketCreateView(CreateView):
 
         try:
             data = info.get('data', KeyError)
-            print('\n\n Data: ', data, '\n\n')
             market_name = data['symbol']
             market_obj = Market.objects.filter(symbol=market_name).first()
 

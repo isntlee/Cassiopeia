@@ -120,48 +120,55 @@ class ShipUpdateView(UpdateView):
 class CargoCreateView(CreateView):
     model = Cargo
     fields = []
-    
-    def form_valid(self, form):
-        agent = self.request.user.agent
-        current_ship = agent.current_ship
+
+    def get_cargo_data(self, agent, current_ship):
         url = f"https://api.spacetraders.io/v2/my/ships/{current_ship}/cargo"
         agent_token = self.request.user.agent.agent_token
         info = get_request(url, agent_token)
+        data = info.get('data', [])
+        return data
+
+    def calculate_cargo_fill(self, cargo_capacity, units_held):
+        cargo_fill = units_held / cargo_capacity
+        full_cargo = cargo_fill == 1.00
+        return cargo_fill, full_cargo
+
+    def create_or_update_cargo(self, cargo_load_list, cargo_obj, current_ship, cargo_capacity, units_held, cargo_fill, full_cargo):
+        ship_obj = Ship.objects.filter(ship_name=current_ship).first()
+        if cargo_obj:
+            self.create_or_update_cargoload(cargo_load_list, cargo_obj)
+            CargoUpdateView.update_cargo(self, cargo_obj.id, cargo_capacity, units_held, cargo_fill, full_cargo)
+        else:
+            cargo_name = f"{current_ship}-cargo"
+            cargo_obj = Cargo.objects.create(
+                cargo_name=cargo_name,
+                cargo_capacity=cargo_capacity,
+                units_held=units_held,
+                cargo_fill=cargo_fill,
+                full_cargo=full_cargo,
+                ship=ship_obj,
+            )
+
+    def form_valid(self, form):
+        agent = self.request.user.agent
+        current_ship = agent.current_ship
+        cargo_data = self.get_cargo_data(agent, current_ship)
+
         try:
-            data = info.get('data', [])
-            cargo_capacity = data['capacity']
-            units_held = data['units']
-            cargo_fill = units_held/cargo_capacity
-            
-            if cargo_fill == 1.00:
-                full_cargo = True
-            else: 
-                full_cargo = False
+            cargo_capacity = cargo_data['capacity']
+            units_held = cargo_data['units']
+            cargo_fill, full_cargo = self.calculate_cargo_fill(cargo_capacity, units_held)
 
             cargo_name = f"{current_ship}-cargo"
-            cargo_load_list = data['inventory']
-            ship_obj = Ship.objects.filter(ship_name=current_ship).first()
-            cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()   
+            cargo_load_list = cargo_data['inventory']
+            cargo_obj = Cargo.objects.filter(cargo_name=cargo_name).first()
 
-            if cargo_obj:
-                self.create_or_update_cargoload(cargo_load_list, cargo_obj)
-                CargoUpdateView.update_cargo(self, cargo_obj.id, cargo_capacity, units_held, cargo_fill, full_cargo)
-                return redirect('about')
-            
-            else:
-                cargo_obj = Cargo.objects.create(
-                    cargo_name = cargo_name,
-                    cargo_capacity=cargo_capacity,
-                    units_held=units_held,
-                    cargo_fill = cargo_fill, 
-                    full_cargo=full_cargo, 
-                    ship=ship_obj,
-            )      
-            
+            self.create_or_update_cargo(cargo_load_list, cargo_obj, current_ship, cargo_capacity, units_held, cargo_fill, full_cargo)
             return super().form_valid(form)
-        
+
         except Exception:
-           return call_messages(self.request, info)
+            return call_messages(self.request, cargo_data)
+
          
     def create_or_update_cargoload(self, cargo_load_list, cargo_obj):
         for cargo_load in cargo_load_list:
@@ -170,19 +177,24 @@ class CargoCreateView(CreateView):
             # Add the delete cargoload function after sell functions built in
 
             if current_cargo_load_obj:
-                    print('\n\n CargoLoad_units: ', current_cargo_load_obj.units , '\n\n')
                     current_cargo_load_obj.units = cargo_load['units']
                     current_cargo_load_obj.save()
 
-            else:    
-                good_obj = Good.objects.filter(symbol=cargo_load['symbol']).first()   
-                CargoLoad.objects.create(
+            else:  
+                good_obj = Good.objects.filter(symbol=cargo_load['symbol']).first() 
+
+                if good_obj is None:
+                    good_obj = Good.objects.create(symbol=cargo_load['symbol'], name=cargo_load['name'], description=cargo_load['description'])
+                    good_obj.save()
+
+                cargoload_obj = CargoLoad.objects.create(
                         symbol = cargo_load['symbol'],
                         units = cargo_load['units'],
                         good = good_obj,
                         cargo = cargo_obj
-                )
-    
+                ) 
+                cargoload_obj.save() 
+        
     def get_success_url(self):
         return reverse_lazy('home')
         
@@ -205,11 +217,18 @@ class CargoUpdateView(UpdateView):
 
     def get_success_url(self):
         return 
+    
+
+class ShipListView(ListView):
+    model = Ship
+    fields = []
+    template_name = 'ships/testing.html'
 
 
 def create_ship_or_cargo(request):
     if request.method == 'POST':
         if 'create_ship' in request.POST:
+           
             view = ShipCreateView.as_view()
             response = view(request)
             return response
@@ -221,10 +240,5 @@ def create_ship_or_cargo(request):
         
     return render(request, 'ships/testing.html')
 
-
-class ShipListView(ListView):
-    model = Ship
-    fields = []
-    template_name = 'ships/testing.html'
 
 

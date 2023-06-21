@@ -22,8 +22,9 @@
         <li>{{ ship.location_current_type }}</li>
         <li>{{ ship.ship_status }}</li>
         <li>{{ ship.fuel_percentage }}</li>
+        <li>Cargo fill - {{ ship.cargo.cargo_fill }}</li>
         <ul>
-            {% for cargoload in ship.cargo.all %}
+            {% for cargoload in ship.cargo.cargoload.all %}
                 <li>{{ cargoload.symbol }}</li>
             {% endfor %}
         </ul>
