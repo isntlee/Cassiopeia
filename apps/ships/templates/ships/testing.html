@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Server Error{% endblock %}
+{% block title %}Gemini{% endblock %}
 
 {% block content %}
+<br>
 <h2>Ships</h2>
 
 <form method="post" action="{% url 'ships:create_ship_or_cargo' %}">
     {% csrf_token %}
-    <button type="submit" name="create_ship" value="create_ship">Ship</button>
-    <button type="submit" name="create_cargo" value="create_cargo">Cargo</button>
+    <button type="submit" name="create_ship" value="create_ship">Update ship</button>
+    <button type="submit" name="create_cargo" value="create_cargo">Update cargo</button>
 </form>
 <br>
 

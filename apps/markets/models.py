@@ -3,6 +3,7 @@ from django.db import models
 
 class Market(models.Model):
     symbol = models.CharField(max_length=60)
+    market_type = models.CharField(max_length=60, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

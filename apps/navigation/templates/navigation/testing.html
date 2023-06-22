@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Server Error{% endblock %}
+{% block title %}Gemini{% endblock %}
 
 {% block content %}
+<br>
 <h2>Navigation</h2>
 
 <form method="post" action="{% url 'navigation:waypoint_create' %}">
@@ -25,8 +26,6 @@
 </form>
 <br>
 
-
-<h2>Navigation objects</h2>
 <ul>
     <h4>Current location/status</h4>
     {% for ship_data in object_list.ships %}

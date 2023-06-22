@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Server Error{% endblock %}
+{% block title %}Gemini{% endblock %}
 
 {% block content %}
+<br>
 <h2>Agents</h2>
 
 <form method="post" action="{% url 'agents:agent_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Create</button>
+    <button type="submit">Save</button>
 </form>
 <br>
 
-<h2>Agent objects</h2>
     <ul>
     {% for agent in object_list %}
         <li>{{ agent.symbol }}</li>

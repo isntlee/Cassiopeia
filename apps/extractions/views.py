@@ -38,8 +38,8 @@ class ExtractionCreateView(CreateView):
             extraction_obj.save()
             return super().form_valid(form)
         
-        except Exception as e:  # Catch the exception as a variable
-            print('Exception:', e)  # Print the exception details
+        except Exception as e:
+            print('Exception:', e)
             return call_messages(self.request, info)
 
     def get_success_url(self):

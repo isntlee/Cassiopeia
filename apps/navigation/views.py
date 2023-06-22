@@ -111,7 +111,7 @@ class DockToggleView(View):
             self.ship_action(agent_token, ship_symbol, exp_status, 'orbit')
         
         else:
-            info = {'error':{{'message':'Currently in-transit, cannot dock or orbit'}, {'code':'4309'}}}
+            info = {"error":{"message":"Currently in-transit, cannot dock or orbit", "code":4309}}
             call_messages(self.request, info)
         return HttpResponseRedirect(self.success_url)
 

@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
 from .models import  Market, TradeGood, Good
 from apps.ships.models import Ship
+from apps.navigation.models import Waypoint
 from testing.views import get_request, call_messages
 
 
@@ -26,11 +27,12 @@ class MarketCreateView(CreateView):
             print('\n\n Info:', info, '\n\n')
             data = info['data']
             market_name = data['symbol']
+            waypoint = Waypoint.objects.filter(symbol=market_name).first()
             market_obj = Market.objects.filter(symbol=market_name).first()
 
             if not market_obj:
                 print('\n\n Here ?? #2 \n\n')
-                market_obj = Market.objects.create(symbol=market_name)   
+                market_obj = Market.objects.create(symbol=market_name, market_type=waypoint.type)   
                 
             for goods in data['exchange']:
                 print('\n\n Here ?? #3 \n\n')
@@ -45,7 +47,6 @@ class MarketCreateView(CreateView):
                     description = goods['description']
                     print('\n\n Here ?? #4 \n\n')
                     GoodCreateView.create_good(self, symbol, name, description)
-
 
                 for tradegoods in data['tradeGoods']:
                     print('\n\n Here ?? #5 \n\n')

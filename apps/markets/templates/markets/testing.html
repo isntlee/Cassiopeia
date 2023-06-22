@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Server Error{% endblock %}
+{% block title %}Gemini{% endblock %}
 
 {% block content %}
+<br>
 <h2>Markets</h2>
 
 <form method="post" action="{% url 'markets:market_create' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Create</button>
+    <button type="submit">Log entry</button>
 </form>
 <br>
 
-<h2>Market objects</h2>
     <ul>
     {% for market in object_list %}
-        <li>{{ market.symbol }}</li>
+        <li>{{ market.symbol }} ({{ market.market_type }})</li>
         <br>
     {% endfor %}
     </ul>

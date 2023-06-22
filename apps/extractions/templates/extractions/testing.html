@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Server Error{% endblock %}
+{% block title %}Gemini{% endblock %}
 
 {% block content %}
+<br>
 <h2>Extractions</h2>
     
     <form method="post" action="{% url 'extractions:extraction_create' %}">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Create</button>
+        <button type="submit">Begin</button>
     </form>
     <br>
-    
-    <h2>Extraction objects</h2>
         <ul>
         {% for extraction in object_list %}
             <li>{{ extraction.ship }}</li>
-            <li>{{ extraction.extracted  }}</li>
-            <li>{{ extraction.units }}</li>
+            <li>{{ extraction.extracted }}</li>
+            <li>{{ extraction.units }} mtc</li>
+            <li>{{ extraction.created_at }}</li>
             <br>
         {% endfor %}
         </ul>
