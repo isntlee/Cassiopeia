@@ -93,23 +93,29 @@ class NavigateView(FormView):
         return super().form_valid(form)
 
 
-
-## Its working, but it's not completed 
-class DockView(View):
+class DockToggleView(View):
     template_name = 'navigation/testing.html'
     success_url = reverse_lazy('navigation:waypoint_list')
 
     def post(self, *args, **kwargs):
-        agent_token = self.request.user.agent.agent_token
-        ship_symbol = self.request.user.agent.current_ship
+        agent = self.request.user.agent
+        agent_token = agent.agent_token
+        ship_symbol = agent.current_ship
+        ship_data = Ship.objects.filter(ship_name=ship_symbol).first()
         exp_status = 200
 
-        self.dock_ship(agent_token, ship_symbol, exp_status)
-
+        if ship_data.ship_status == 'IN_ORBIT':
+            self.ship_action(agent_token, ship_symbol, exp_status, 'dock')
+        
+        elif ship_data.ship_status == 'DOCKED':
+            self.ship_action(agent_token, ship_symbol, exp_status, 'orbit')
+        
+        else:
+            info = {'error':{{'message':'Currently in-transit, cannot dock or orbit'}, {'code':'4309'}}}
+            call_messages(self.request, info)
         return HttpResponseRedirect(self.success_url)
 
-    def dock_ship(self, agent_token, ship_symbol, exp_status):
-        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/dock"
+    def ship_action(self, agent_token, ship_symbol, exp_status, action):
+        url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/{action}"
         payload = {}
         post_request(url, payload, exp_status, agent_token)
-

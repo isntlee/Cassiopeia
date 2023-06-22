@@ -18,10 +18,10 @@
     <input type="text" name="user_input">
 </form>
 
-<form method="post" action="{% url 'navigation:dock' %}">
+<form method="post" action="{% url 'navigation:dock_toggle' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" name="action" value="dock">Dock</button>
+    <button type="submit" name="action" value="dock_toggle">Dock/Orbit</button>
 </form>
 <br>
 
