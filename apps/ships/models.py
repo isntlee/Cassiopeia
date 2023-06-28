@@ -31,11 +31,6 @@ class Ship(models.Model):
     location_current_type=models.CharField(max_length=60)
 
     def save(self, *args, **kwargs):
-        if self.fuel_capacity and self.fuel_current:
-            self.fuel_percentage = (self.fuel_current / self.fuel_capacity) * 100
-        else:
-            self.fuel_percentage = None
-
         if not self.ship_name:
             return
         super(Ship, self).save(*args, **kwargs)

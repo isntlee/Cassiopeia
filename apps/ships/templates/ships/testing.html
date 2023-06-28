@@ -26,7 +26,7 @@
         <li>Cargo fill - {{ ship.cargo.cargo_fill }}</li>
         <ul>
             {% for cargoload in ship.cargo.cargoload.all %}
-                <li>{{ cargoload.symbol }}</li>
+                <li>{{ cargoload.symbol }} - {{ cargoload.units }}</li>
             {% endfor %}
         </ul>
         <br>

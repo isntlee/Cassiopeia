@@ -626,6 +626,3 @@ def ending_script():
 
         except Exception:
             traceback.print_exc()
-            
-
-            

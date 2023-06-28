@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, ListView, FormView, View
 from .models import  Waypoint, Trait
 from apps.ships.models import Ship
+from apps.ships.views import ShipCreateView
 from testing.views import get_request, post_request, call_messages
 
 
@@ -89,7 +90,7 @@ class NavigateView(FormView):
         user_input = self.request.POST.get('user_input')
         payload = {'waypointSymbol': user_input}
         post_request(url, payload, exp_status, agent_token)
-
+        ShipCreateView.as_view()
         return super().form_valid(form)
 
 
@@ -119,3 +120,4 @@ class DockToggleView(View):
         url = f"https://api.spacetraders.io/v2/my/ships/{ship_symbol}/{action}"
         payload = {}
         post_request(url, payload, exp_status, agent_token)
+        ShipCreateView.as_view()

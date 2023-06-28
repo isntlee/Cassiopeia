@@ -23,7 +23,8 @@ def current_ship_data(data):
         fuel_current = data['fuel']['current']
         fuel_capacity =  data['fuel']['capacity']
         fuel_consumed =  data['fuel']['consumed']['amount']
-
+        fuel_percentage = (fuel_current/fuel_capacity) * 100
+        
         ship_status = data['nav']['status']
         flightmode = data['nav']['flightMode']
 
@@ -53,6 +54,7 @@ def current_ship_data(data):
                 'fuel_consumed': fuel_consumed,
                 'fuel_capacity': fuel_capacity,
                 'fuel_current': fuel_current,
+                'fuel_percentage':fuel_percentage,
                 'flightmode': flightmode,
                 'ship_status': ship_status,
                 'location_current': location_current,

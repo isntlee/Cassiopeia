@@ -11,11 +11,23 @@
     {{ form.as_p }}
     <button type="submit">Log entry</button>
 </form>
-<br>
 
+<form method="post" action="{% url 'markets:market_sell' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="action" value="navigate">Sell</button>
+    <input type="text" name="sell_symbol">
+    <input type="text" name="units">
+</form>
+<br>
     <ul>
     {% for market in object_list %}
         <li>{{ market.symbol }} ({{ market.market_type }})</li>
+        <ul>
+            {% for tradegood in market.tradegoods.all %}
+                <li>{{ tradegood.symbol }} - {{ tradegood.sellPrice }}</li>
+            {% endfor %}
+        </ul>
         <br>
     {% endfor %}
     </ul>

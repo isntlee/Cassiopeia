@@ -5,5 +5,6 @@ app_name = 'markets'
 
 urlpatterns = [
     path("", views.MarketListView.as_view(), name="market_list"), 
-    path("create/", views.MarketCreateView.as_view(), name="market_create")
+    path("create/", views.MarketCreateView.as_view(), name="market_create"),
+    path("sell/", views.MarketSellView.as_view(), name="market_sell")
 ]
