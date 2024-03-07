@@ -1,38 +1,36 @@
-{% extends "base.html" %}
-
-{% block title %}Gemini{% endblock %}
-
-{% block content %}
-<br>
+{% extends "base.html" %} {% block title %}cassiopeia{% endblock %} {% block
+content %}
+<br />
 <h2>Ships</h2>
 
 <form method="post" action="{% url 'ships:create_ship_or_cargo' %}">
-    {% csrf_token %}
-    <button type="submit" name="create_ship" value="create_ship">Update ship</button>
-    <button type="submit" name="create_cargo" value="create_cargo">Update cargo</button>
+  {% csrf_token %}
+  <button type="submit" name="create_ship" value="create_ship">
+    Update ship
+  </button>
+  <button type="submit" name="create_cargo" value="create_cargo">
+    Update cargo
+  </button>
 </form>
-<br>
-
+<br />
 
 <h2>Ship objects</h2>
-    <ul>
-    {% for ship in object_list %}
-        <li>{{ ship.ship_name }}</li>
-        <li>{{ ship.role }}</li>
-        <li>{{ ship.location_current }}</li>
-        <li>{{ ship.location_current_type }}</li>
-        <li>{{ ship.ship_status }}</li>
-        <li>{{ ship.fuel_percentage }}</li>
-        <li>Cargo fill - {{ ship.cargo.cargo_fill }}</li>
-        <ul>
-            {% for cargoload in ship.cargo.cargoload.all %}
-                <li>{{ cargoload.symbol }} - {{ cargoload.units }}</li>
-            {% endfor %}
-        </ul>
-        <br>
+<ul>
+  {% for ship in object_list %}
+  <li>{{ ship.ship_name }}</li>
+  <li>{{ ship.role }}</li>
+  <li>{{ ship.location_current }}</li>
+  <li>{{ ship.location_current_type }}</li>
+  <li>{{ ship.ship_status }}</li>
+  <li>{{ ship.fuel_percentage }}</li>
+  <li>Cargo fill - {{ ship.cargo.cargo_fill }}</li>
+  <ul>
+    {% for cargoload in ship.cargo.cargoload.all %}
+    <li>{{ cargoload.symbol }} - {{ cargoload.units }}</li>
     {% endfor %}
-    </ul>
-
-    
+  </ul>
+  <br />
+  {% endfor %}
+</ul>
 
 {% endblock content %}

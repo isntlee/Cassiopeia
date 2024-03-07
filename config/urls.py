@@ -11,7 +11,7 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
-    path("users/", include("gemini.users.urls", namespace="users")),
+    path("users/", include("cassiopeia.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     path("markets/", include("apps.markets.urls", namespace="markets")),
@@ -19,7 +19,6 @@ urlpatterns = [
     path("ships/", include("apps.ships.urls", namespace="ships")),
     path("navigation/", include("apps.navigation.urls", namespace="navigation")),
     path("agents/", include("apps.agents.urls", namespace="agents")),
-
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

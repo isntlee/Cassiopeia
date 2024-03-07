@@ -8,10 +8,10 @@ from django.http import HttpRequest, HttpResponseRedirect
 from django.test import RequestFactory
 from django.urls import reverse
 
-from gemini.users.forms import UserAdminChangeForm
-from gemini.users.models import User
-from gemini.users.tests.factories import UserFactory
-from gemini.users.views import UserRedirectView, UserUpdateView, user_detail_view
+from cassiopeia.users.forms import UserAdminChangeForm
+from cassiopeia.users.models import User
+from cassiopeia.users.tests.factories import UserFactory
+from cassiopeia.users.views import UserRedirectView, UserUpdateView, user_detail_view
 
 pytestmark = pytest.mark.django_db
 

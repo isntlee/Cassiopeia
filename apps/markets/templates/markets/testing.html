@@ -1,35 +1,30 @@
-{% extends "base.html" %}
-
-{% block title %}Gemini{% endblock %}
-
-{% block content %}
-<br>
+{% extends "base.html" %} {% block title %}cassiopeia{% endblock %} {% block
+content %}
+<br />
 <h2>Markets</h2>
 
 <form method="post" action="{% url 'markets:market_create' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log entry</button>
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Log entry</button>
 </form>
 
 <form method="post" action="{% url 'markets:market_sell' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" name="action" value="navigate">Sell</button>
-    <input type="text" name="sell_symbol">
-    <input type="text" name="units">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" name="action" value="navigate">Sell</button>
+  <input type="text" name="sell_symbol" />
+  <input type="text" name="units" />
 </form>
-<br>
-    <ul>
-    {% for market in object_list %}
-        <li>{{ market.symbol }} ({{ market.market_type }})</li>
-        <ul>
-            {% for tradegood in market.tradegoods.all %}
-                <li>{{ tradegood.symbol }} - {{ tradegood.sellPrice }}</li>
-            {% endfor %}
-        </ul>
-        <br>
+<br />
+<ul>
+  {% for market in object_list %}
+  <li>{{ market.symbol }} ({{ market.market_type }})</li>
+  <ul>
+    {% for tradegood in market.tradegoods.all %}
+    <li>{{ tradegood.symbol }} - {{ tradegood.sellPrice }}</li>
     {% endfor %}
-    </ul>
+  </ul>
+  <br />
+  {% endfor %}
+</ul>
 
 {% endblock content %}

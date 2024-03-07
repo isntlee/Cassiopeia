@@ -4,14 +4,14 @@ How To - Project Documentation
 Get Started
 ----------------------------------------------------------------------
 
-Documentation can be written as rst files in `gemini/docs`.
+Documentation can be written as rst files in `cassiopeia/docs`.
 
 
 To build and serve docs, use the command::
     
     make livehtml 
     
-from inside the `gemini/docs` directory. 
+from inside the `cassiopeia/docs` directory. 
 
 
 Changes to files in `docs/_source` will be picked up and reloaded automatically.

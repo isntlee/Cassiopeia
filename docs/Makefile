@@ -7,7 +7,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = ./_build
-APP = ../gemini
+APP = ../cassiopeia
 
 
 .PHONY: help livehtml apidocs Makefile

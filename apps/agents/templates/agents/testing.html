@@ -1,27 +1,23 @@
-{% extends "base.html" %}
-
-{% block title %}Gemini{% endblock %}
-
-{% block content %}
-<br>
+{% extends "base.html" %} {% block title %}cassiopeia{% endblock %} {% block
+content %}
+<br />
 <h2>Agents</h2>
 
 <form method="post" action="{% url 'agents:agent_create' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Save</button>
 </form>
-<br>
+<br />
 
-    <ul>
-    {% for agent in object_list %}
-        <li>{{ agent.symbol }}</li>
-        <li>{{ agent.hq }}</li>
-        <li>{{ agent.faction }}</li>
-        <li>{{ agent.credits }}</li>
-        <li>{{ agent.current_ship }}</li>
-        <br>
-    {% endfor %}
-    </ul>
+<ul>
+  {% for agent in object_list %}
+  <li>{{ agent.symbol }}</li>
+  <li>{{ agent.hq }}</li>
+  <li>{{ agent.faction }}</li>
+  <li>{{ agent.credits }}</li>
+  <li>{{ agent.current_ship }}</li>
+  <br />
+  {% endfor %}
+</ul>
 
 {% endblock content %}

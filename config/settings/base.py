@@ -6,8 +6,8 @@ from pathlib import Path
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# gemini/
-APPS_DIR = BASE_DIR / "gemini"
+# cassiopeia/
+APPS_DIR = BASE_DIR / "cassiopeia"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
@@ -42,7 +42,7 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="postgres://localhost/gemini",
+        default="postgres://localhost/cassiopeia",
     ),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
@@ -78,7 +78,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "gemini.users",
+    "cassiopeia.users",
     "testing",
     "apps.markets",
     "apps.extractions",
@@ -93,7 +93,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIGRATIONS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
-MIGRATION_MODULES = {"sites": "gemini.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "cassiopeia.contrib.sites.migrations"}
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "gemini.users.context_processors.allauth_settings",
+                "cassiopeia.users.context_processors.allauth_settings",
             ],
         },
     }
@@ -264,13 +264,13 @@ ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_ADAPTER = "gemini.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "cassiopeia.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/forms.html
-ACCOUNT_FORMS = {"signup": "gemini.users.forms.UserSignupForm"}
+ACCOUNT_FORMS = {"signup": "cassiopeia.users.forms.UserSignupForm"}
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-SOCIALACCOUNT_ADAPTER = "gemini.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "cassiopeia.users.adapters.SocialAccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/forms.html
-SOCIALACCOUNT_FORMS = {"signup": "gemini.users.forms.UserSocialSignupForm"}
+SOCIALACCOUNT_FORMS = {"signup": "cassiopeia.users.forms.UserSocialSignupForm"}
 
 
 # Your stuff...

@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from gemini.users.models import User
+from cassiopeia.users.models import User
 
 
 class TestUserAdmin:

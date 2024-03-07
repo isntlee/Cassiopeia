@@ -1,7 +1,7 @@
 import pytest
 
-from gemini.users.models import User
-from gemini.users.tests.factories import UserFactory
+from cassiopeia.users.models import User
+from cassiopeia.users.tests.factories import UserFactory
 
 
 @pytest.fixture(autouse=True)

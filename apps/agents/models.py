@@ -1,5 +1,6 @@
 from django.db import models
-from gemini.users.models import User
+
+from cassiopeia.users.models import User
 
 
 class Agent(models.Model):
@@ -10,12 +11,12 @@ class Agent(models.Model):
     current_ship = models.CharField(max_length=60, null=True, blank=True)
     credits = models.IntegerField(null=True, blank=True)
     agent_token = models.CharField(max_length=1000)
-    user = models.OneToOneField(User, related_name='agent', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="agent", on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.symbol:
             return
-        super(Agent, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.symbol

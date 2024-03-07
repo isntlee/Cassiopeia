@@ -1,25 +1,21 @@
-{% extends "base.html" %}
-
-{% block title %}Gemini{% endblock %}
-
-{% block content %}
-<br>
+{% extends "base.html" %} {% block title %}cassiopeia{% endblock %} {% block
+content %}
+<br />
 <h2>Extractions</h2>
-    
-    <form method="post" action="{% url 'extractions:extraction_create' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Begin</button>
-    </form>
-    <br>
-        <ul>
-        {% for extraction in object_list %}
-            <li>{{ extraction.ship }}</li>
-            <li>{{ extraction.extracted }}</li>
-            <li>{{ extraction.units }} mtc</li>
-            <li>{{ extraction.created_at }}</li>
-            <br>
-        {% endfor %}
-        </ul>
+
+<form method="post" action="{% url 'extractions:extraction_create' %}">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Begin</button>
+</form>
+<br />
+<ul>
+  {% for extraction in object_list %}
+  <li>{{ extraction.ship }}</li>
+  <li>{{ extraction.extracted }}</li>
+  <li>{{ extraction.units }} mtc</li>
+  <li>{{ extraction.created_at }}</li>
+  <br />
+  {% endfor %}
+</ul>
 
 {% endblock content %}

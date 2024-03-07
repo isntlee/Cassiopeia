@@ -3,8 +3,8 @@ Module for all Form Tests.
 """
 from django.utils.translation import gettext_lazy as _
 
-from gemini.users.forms import UserAdminCreationForm
-from gemini.users.models import User
+from cassiopeia.users.forms import UserAdminCreationForm
+from cassiopeia.users.models import User
 
 
 class TestUserAdminCreationForm:

@@ -1,6 +1,6 @@
 from django.urls import resolve, reverse
 
-from gemini.users.models import User
+from cassiopeia.users.models import User
 
 
 def test_detail(user: User):

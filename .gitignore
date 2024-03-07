@@ -274,6 +274,6 @@ dump.rdb
 
 ### Project template
 MailHog
-gemini/media/
+cassiopeia/media/
 
 .pytest_cache/
